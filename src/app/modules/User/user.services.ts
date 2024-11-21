@@ -32,7 +32,7 @@ const createUserIntoDb = async (payload: User) => {
   }
   payload.role="USER"
   const hashedPassword: string = await bcrypt.hash(
-    payload.password,
+    payload.password!,
     Number(config.bcrypt_salt_rounds)
   );
   const otp = crypto.randomInt(1000, 9999).toString();

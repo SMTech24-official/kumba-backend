@@ -21,5 +21,11 @@ export default {
         email: process.env.MAIL,
         app_pass: process.env.MAIL_PASS
     },
+    oauth:{
+        google:{
+            client_id:process.env.GOOGLE_AUTH_AUTH_CLIENT_ID,
+            client_secret:process.env.GOOGLE_AUTH_CLIENT_SECRET
+        }
+    }
 
 }

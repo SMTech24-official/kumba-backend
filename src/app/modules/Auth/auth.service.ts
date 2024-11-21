@@ -9,7 +9,6 @@ import emailSender from "./emailSender";
 import httpStatus from "http-status";
 import { sendEmail } from "../../../shared/sendEmail";
 import crypto from "crypto";
-import { send } from "process";
 
 // user login
 const loginUser = async (payload: { email: string; password: string }) => {
@@ -27,7 +26,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
-    userData.password
+    userData.password!
   );
 
   if (!isCorrectPassword) {
@@ -107,7 +106,7 @@ const changePassword = async (
     throw new ApiError(404, "User not found");
   }
 
-  const isPasswordValid = await bcrypt.compare(oldPassword, user?.password);
+  const isPasswordValid = await bcrypt.compare(oldPassword, user?.password!);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Incorrect old password");
@@ -354,6 +353,45 @@ const refreshToken = async (token: string) => {
     accessToken,
   };
 };
+
+const googleOauthLogin = async (user:User ) => {
+  // Check if the user exists
+  let existingUser = await prisma.user.findUnique({
+    where: { email: user.email }, // Find user by email
+  });
+
+  if (!existingUser) {
+    // Create a new user if one does not exist
+    console.log("Creating new user");
+
+    existingUser = await prisma.user.create({
+      data: {
+        ...user, // Default role
+        isVerified: true, // Mark as verified for OAuth
+      },
+    });
+  }
+
+  // Generate JWT for the logged-in user
+  const jwtPayload = {
+    userId: existingUser.id,
+    firstName: existingUser.firstName,
+    lastName: existingUser.lastName,
+    profilePic: existingUser.profilePic,
+    email: existingUser.email,
+    role: existingUser.role,
+  };
+
+  const accessToken = jwtHelpers.generateToken(
+    jwtPayload,
+    config.jwt.jwt_secret as string, // JWT secret from config
+    config.jwt.expires_in as string // Token expiration time
+  );
+
+  return {
+    accessToken,
+  };
+};
 export const AuthServices = {
   loginUser,
   getMyProfile,
@@ -363,4 +401,5 @@ export const AuthServices = {
   verifyOtp,
   resendOtp,
   refreshToken,
+  googleOauthLogin,
 };

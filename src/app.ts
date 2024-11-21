@@ -7,7 +7,7 @@ import GlobalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
 import cron from "node-cron"
 import { deleteUnverifiedUsers } from "./shared/deleteUnverifiedUser";
-
+import passport from "passport"; 
 
 const app: Application = express();
 export const corsOptions = {
@@ -44,7 +44,8 @@ app.use("/api/v1", router);
 //     console.error("Error deleting unverified users:", error);
 //   }
 // });
-
+app.use(passport.initialize()); // Initialize Passport
+app.use(passport.session());
 // Error handling middleware
 app.use(GlobalErrorHandler);
 
