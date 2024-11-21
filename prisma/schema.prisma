@@ -8,13 +8,17 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String // User's first name
-  lastName  String // User's last name
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  firstName  String // User's first name
+  lastName   String // User's last name
   email      String     @unique
   password   String
-  role  UserRole
-  profilePic String? // URL to profile picture
+  role       UserRole
+  profilePic String?    @default("") // URL to profile picture
+  otp        String?
+  OtpExpires DateTime? @default(now()) 
+  isVerified  Boolean   @default(false)
+
   bio        String? // Short user bio
   posts      Post[]     @relation("UserPosts")
   likes      Like[]     @relation("UserLikes")
@@ -24,6 +28,7 @@ model User {
   following  Follower[] @relation("FollowingUsers")
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+
   @@map("users")
 }
 
@@ -31,9 +36,9 @@ model Post {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
   caption     String?
   contentType ContentType
-  text String?
-  video String?
-  photo String?
+  text        String?
+  video       String?
+  photo       String?
   userId      String      @db.ObjectId
   user        User        @relation("UserPosts", fields: [userId], references: [id])
   likes       Like[]      @relation("PostLikes")
@@ -42,7 +47,7 @@ model Post {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-@@map("posts")
+  @@map("posts")
 }
 
 model Like {
@@ -52,6 +57,7 @@ model Like {
   postId    String   @db.ObjectId
   post      Post     @relation("PostLikes", fields: [postId], references: [id])
   createdAt DateTime @default(now())
+
   @@map("likes")
 }
 
@@ -63,6 +69,7 @@ model Comment {
   postId    String   @db.ObjectId
   post      Post     @relation("PostComments", fields: [postId], references: [id])
   createdAt DateTime @default(now())
+
   @@map("comments")
 }
 
@@ -73,6 +80,7 @@ model Follower {
   followingId String   @db.ObjectId
   following   User     @relation("FollowedUsers", fields: [followingId], references: [id])
   createdAt   DateTime @default(now())
+
   @@map("followers")
 }
 
@@ -83,6 +91,7 @@ model Favorite {
   postId    String   @db.ObjectId
   post      Post     @relation("PostFavorites", fields: [postId], references: [id])
   createdAt DateTime @default(now())
+
   @@map("favorites")
 }
 

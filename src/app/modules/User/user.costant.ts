@@ -6,4 +6,4 @@ export const userFilterableFields = [
   "username",
 ];
 
-export const userSearchAbleFields = ["email", "name", "username"];
+export const userSearchAbleFields = ["email", "firstName","lastName", ];

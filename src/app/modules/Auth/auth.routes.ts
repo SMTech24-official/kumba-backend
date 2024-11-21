@@ -26,7 +26,7 @@ router.get(
 
 router.put(
   "/change-password",
-  auth(),
+  auth(UserRole.ADMIN,UserRole.USER,UserRole.SUPER_ADMIN),
   validateRequest(authValidation.changePasswordValidationSchema),
   AuthController.changePassword
 );
@@ -39,7 +39,15 @@ router.post(
 
 router.post(
   '/reset-password',
+ 
   AuthController.resetPassword
 )
 
+// verify otp
+router.patch("/verify-otp", AuthController.verifyOtp)
+// resend otp 
+router.patch("/resend-otp", AuthController.resendOtp)
+// get access token by refresh token
+
+router.post("/refresh-token", AuthController.refreshToken);
 export const AuthRoutes = router;
