@@ -34,11 +34,9 @@ model User {
 
 model Post {
   id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  caption     String?
-  contentType ContentType
-  text        String?
-  video       String?
-  photo       String?
+  text        String? 
+  videos       Json?         // Array of objects like [{url: ""}]
+  photos       Json?   
   userId      String      @db.ObjectId
   user        User        @relation("UserPosts", fields: [userId], references: [id])
   likes       Like[]      @relation("PostLikes")
