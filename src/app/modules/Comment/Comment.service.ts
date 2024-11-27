@@ -23,6 +23,24 @@ const addComment = async (user: any, payload: any): Promise<Comment> => {
   });
 };
 
+const getCommentById = async (id: string) => {
+  if (!id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid comment ID.");
+  }
+  const comment = await prisma.comment.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+  if (!comment) {
+    throw new ApiError(
+      httpStatus.NOT_FOUND,
+      `Comment with ID ${id} not found.`
+    );
+  }
+
+  return comment;
+};
+
 const updateComment = async (
   user: any,
   payload: any,
@@ -106,4 +124,5 @@ export const CommentService = {
   updateComment,
   deleteComment,
   getCommentsByPostId,
+  getCommentById
 };

@@ -8,6 +8,9 @@ const router = express.Router();
 // Add a comment
 router.post("/", auth(), CommentController.addComment);
 
+//get comment by comment id
+router.get("/:id", auth(), CommentController.getCommentById);
+
 // Update a comment
 router.put("/:id", auth(), CommentController.updateComment);
 

@@ -57,9 +57,22 @@ const getCommentsByPostId = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getCommentById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await CommentService.getCommentById(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Comments retrieved successfully",
+    data: result,
+  });
+});
+
 export const CommentController = {
   addComment,
   updateComment,
   deleteComment,
   getCommentsByPostId,
+  getCommentById
 };
