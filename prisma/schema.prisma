@@ -60,18 +60,19 @@ model Education {
 }
 
 model Post {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  text      String?
-  videos    Json? // Array of objects like [{url: ""}]
-  photos    Json?
-  userId    String     @db.ObjectId
-  user      User       @relation("UserPosts", fields: [userId], references: [id])
-  likes     Like[]     @relation("PostLikes")
-  comments  Comment[]  @relation("PostComments")
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  Share     Share[]
-  Favorite  Favorite[]
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  text       String?
+  videos     Json? // Array of objects like [{url: ""}]
+  photos     Json?
+  shareCount Int?
+  userId     String     @db.ObjectId
+  user       User       @relation("UserPosts", fields: [userId], references: [id])
+  likes      Like[]     @relation("PostLikes")
+  comments   Comment[]  @relation("PostComments")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  Share      Share[]
+  Favorite   Favorite[]
 
   @@map("posts")
 }
@@ -161,7 +162,6 @@ enum ContentType {
   PHOTO
   VIDEO
 }
-
 
 enum UserRole {
   ADMIN
