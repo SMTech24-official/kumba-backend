@@ -15,7 +15,7 @@ model User {
   password   String?
   role       UserRole
   profilePic String?     @default("") // URL to profile picture
-  banneerPic String?     @default("") // URL to
+  bannerPic String?     @default("") // URL to
   summary    String?
   birthday   String?
   skills     Json?
@@ -34,7 +34,7 @@ model User {
   Award      Award[]
   Education  Education[]
   Share      Share[]
-  Favirute   Favorite[]
+  Favorite   Favorite[]
   Cart       Cart[]
 
   @@map("users")
