@@ -1,11 +1,17 @@
 import express from "express";
 import { productController } from "./product.controller";
 import { fileUploader } from "../../../helpars/fileUploader";
+import { TProductValidationSchema } from "./product.validation";
+import validateRequest from "../../middlewares/validateRequest";
 
 const router = express.Router();
 
 // Route to create a product
-router.post("/create-product", fileUploader?.uploadSingle, productController.createProduct);
+router.post(
+  "/create-product",
+  fileUploader?.uploadSingle,
+  productController.createProduct
+);
 
 // Route to get all products
 router.get("/", productController.getAllProducts);

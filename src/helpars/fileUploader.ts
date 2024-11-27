@@ -94,7 +94,7 @@ const uploadToDigitalOcean = async (
     // Ensure the file exists before attempting to upload it
     await fs.access(file.path);
 
-    const Key = `ayoku/${Date.now()}_${file.originalname}`;
+    const Key = `kumba/${Date.now()}_${file.originalname}`;
     const uploadParams = {
       Bucket: process.env.DO_SPACE_BUCKET || "",
       Key,
