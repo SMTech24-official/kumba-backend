@@ -1,8 +1,12 @@
 import multer from "multer";
 import path from "path";
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary } from "cloudinary";
 import fs from "fs/promises";
-import { S3Client, PutObjectCommand, ObjectCannedACL } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL,
+} from "@aws-sdk/client-s3";
 import { ICloudinaryResponse, IFile } from "../interfaces/file";
 import config from "../config";
 
@@ -25,24 +29,27 @@ const upload = multer({ storage: storage });
 
 // upload single image
 const uploadSingle = upload.single("image");
+const updateProfile = upload.fields([
+  { name: "profile", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+]);
 
 // upload multiple image
 const uploadPost = upload.fields([
   { name: "photos", maxCount: 500 },
   { name: "videos", maxCount: 100 },
- 
 ]);
 
-cloudinary.config({ 
-  cloud_name: 'dezfej6wq', 
-  api_key: config.cloudinary.api_key, 
-  api_secret:config.cloudinary.api_secret  // Click 'View API Keys' above to copy your API secret
+cloudinary.config({
+  cloud_name: "dezfej6wq",
+  api_key: config.cloudinary.api_key,
+  api_secret: config.cloudinary.api_secret, // Click 'View API Keys' above to copy your API secret
 });
 const uploadToCloudinary = async (file: Express.Multer.File): Promise<any> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       file.path,
-      { resource_type: 'auto' }, // Auto-detect file type
+      { resource_type: "auto" }, // Auto-detect file type
       (error, result) => {
         // Delete the local file after uploading
         fs.unlink(file.path);
@@ -56,7 +63,6 @@ const uploadToCloudinary = async (file: Express.Multer.File): Promise<any> => {
     );
   });
 };
-
 
 // Configure DigitalOcean Spaces
 const s3Client = new S3Client({
@@ -77,7 +83,9 @@ const removeFile = async (filePath: string) => {
   }
 };
 // Upload file to DigitalOcean Spaces
-const uploadToDigitalOcean = async (file: Express.Multer.File): Promise<UploadResponse> => {
+const uploadToDigitalOcean = async (
+  file: Express.Multer.File
+): Promise<UploadResponse> => {
   if (!file) {
     throw new Error("File is required for uploading.");
   }
@@ -116,8 +124,8 @@ const uploadToDigitalOcean = async (file: Express.Multer.File): Promise<UploadRe
 export const fileUploader = {
   upload,
   uploadSingle,
+  updateProfile,
   uploadPost,
   uploadToCloudinary,
-  uploadToDigitalOcean
-
+  uploadToDigitalOcean,
 };

@@ -5,6 +5,7 @@ import { userService } from "./user.services";
 import { Request, Response } from "express";
 import pick from "../../../shared/pick";
 import { userFilterableFields } from "./user.costant";
+import { JwtPayload } from "jsonwebtoken";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createUserIntoDb(req.body);
@@ -34,35 +35,78 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 
-// get all user form db
-const updateProfile = catchAsync(async (req: Request & {user?:any}, res: Response) => {
-  const user = req?.user;
+// Controller to update the user profile
+const updateProfile = catchAsync(async (req, res) => {
+  // Get the user from the request (authenticated user)
+  const user = req.user; // Assuming user is set by the 'auth' middleware
+  const payload = req.body;
 
-  const result = await userService.updateProfile(user, req.body);
+  // Call the updateProfile service function
+  const result = await userService.updateProfile(user as JwtPayload, payload);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Profile updated successfully!",
+    message: "User profile updated successfully!",
     data: result,
   });
 });
 
+// Controller to get user profile
+const getUserProfile = catchAsync(async (req: Request, res: Response) => {
+  // Get the authenticated user from req.user
+  const user = req.user as JwtPayload;
 
-// *! update user role and account status
-const updateUser = catchAsync(async (req: Request, res: Response) => {
-const id = req.params.id;
-  const result = await userService.updateUserIntoDb( req.body,id);
+  // Call the service function to fetch user profile
+  const result = await userService.getUserProfile(user.id );
+
+  // Send the response with user data
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "User updated successfully!",
+    message: "User profile fetched successfully!",
     data: result,
   });
 });
+// Controller to get user profile
+const updateProfileImage = catchAsync(async (req: Request, res: Response) => {
+  // Get the authenticated user from req.user
+  const user = req.user as JwtPayload;
+
+  // Call the service function to fetch user profile
+  const result = await userService.updateProfileImage(req);
+
+  // Send the response with user data
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile photo upload successfully!",
+    data: result,
+  });
+});
+const updateBannerImage = catchAsync(async (req: Request, res: Response) => {
+  // Get the authenticated user from req.user
+  const user = req.user as JwtPayload;
+
+  // Call the service function to fetch user profile
+  const result = await userService.updateBannerImage(req);
+
+  // Send the response with user data
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User Cover photo upload successfully!",
+    data: result,
+  });
+});
+
 
 export const userController = {
   createUser,
   getUsers,
   updateProfile,
-  updateUser
+  getUserProfile,
+  updateProfileImage,
+  updateBannerImage
+
 };
