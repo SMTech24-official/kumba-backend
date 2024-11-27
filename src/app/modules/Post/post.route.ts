@@ -31,7 +31,7 @@ router.put(
 // Delete a post by ID
 router.delete(
   '/posts/:id',
-  auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN,UserRole.USER),
   postController.deletePost
 );
 

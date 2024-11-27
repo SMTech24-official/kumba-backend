@@ -4,24 +4,35 @@ import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import { JwtPayload } from "jsonwebtoken";
+import { CloudFormation } from "aws-sdk";
 
 const addPost = async (req: Request) => {
   try {
     const loginUser = req.user as JwtPayload;
-    const videoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['videos'] || [];
-    const photoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['photos'] || [];
+    const videoFiles =
+      (req.files as { [fieldname: string]: Express.Multer.File[] })["videos"] ||
+      [];
+    const photoFiles =
+      (req.files as { [fieldname: string]: Express.Multer.File[] })["photos"] ||
+      [];
     let payload;
     if (req.body.data) {
       payload = JSON.parse(req.body.data);
     }
-    const user = await prisma.user.findFirstOrThrow({ where: { id: loginUser.id } });
+    const user = await prisma.user.findFirstOrThrow({
+      where: { id: loginUser.id },
+    });
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
     }
 
     // Upload photos and videos concurrently
-    const uploadPhotoPromises = photoFiles.map((photo) => fileUploader.uploadToDigitalOcean(photo));
-    const uploadVideoPromises = videoFiles.map((video) => fileUploader.uploadToDigitalOcean(video));
+    const uploadPhotoPromises = photoFiles.map((photo) =>
+      fileUploader.uploadToDigitalOcean(photo)
+    );
+    const uploadVideoPromises = videoFiles.map((video) =>
+      fileUploader.uploadToDigitalOcean(video)
+    );
 
     const [photoResults, videoResults] = await Promise.all([
       Promise.all(uploadPhotoPromises),
@@ -47,7 +58,7 @@ const addPost = async (req: Request) => {
 
     return result;
   } catch (error: any) {
-    console.error('Error uploading files:', error);
+    console.error("Error uploading files:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
@@ -73,7 +84,10 @@ const getAllPosts = async (page: number = 1, limit: number = 10) => {
     });
     return posts;
   } catch (error: any) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Error fetching posts");
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Error fetching posts"
+    );
   }
 };
 
@@ -82,8 +96,12 @@ const updatePost = async (req: Request) => {
   try {
     const loginUser = req.user as JwtPayload;
     const { id } = req.params; // Assuming post ID is passed in the URL parameters
-    const videoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['videos'] || [];
-    const photoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['photos'] || [];
+    const videoFiles =
+      (req.files as { [fieldname: string]: Express.Multer.File[] })["videos"] ||
+      [];
+    const photoFiles =
+      (req.files as { [fieldname: string]: Express.Multer.File[] })["photos"] ||
+      [];
     let payload;
     if (req.body.data) {
       payload = JSON.parse(req.body.data);
@@ -97,12 +115,19 @@ const updatePost = async (req: Request) => {
       },
     });
 
-    if(!existingPost){
-      throw new ApiError(httpStatus.NOT_FOUND, "Post not found or you do not have permission to update it!");
+    if (!existingPost) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        "Post not found or you do not have permission to update it!"
+      );
     }
     // Upload photos and videos concurrently
-    const uploadPhotoPromises = photoFiles.map((photo) => fileUploader.uploadToDigitalOcean(photo));
-    const uploadVideoPromises = videoFiles.map((video) => fileUploader.uploadToDigitalOcean(video));
+    const uploadPhotoPromises = photoFiles.map((photo) =>
+      fileUploader.uploadToDigitalOcean(photo)
+    );
+    const uploadVideoPromises = videoFiles.map((video) =>
+      fileUploader.uploadToDigitalOcean(video)
+    );
 
     const [photoResults, videoResults] = await Promise.all([
       Promise.all(uploadPhotoPromises),
@@ -119,19 +144,13 @@ const updatePost = async (req: Request) => {
 
     console.log(savedPhotos, savedVideos);
     // Prepare data for the update
-const updateData = {
-  ...payload,
-  photos: [
-   
-    ...savedPhotos,
-  ], // Merge new and existing photos
-  videos: [
-    
-    ...savedVideos,
-  ], // Merge new and existing videos
-};
+    const updateData = {
+      ...payload,
+      photos: [...savedPhotos], // Merge new and existing photos
+      videos: [...savedVideos], // Merge new and existing videos
+    };
 
-console.log(updateData,savedPhotos,savedVideos)
+    console.log(updateData, savedPhotos, savedVideos);
     // Update the post
     const updatedPost = await prisma.post.update({
       where: { id },
@@ -140,21 +159,25 @@ console.log(updateData,savedPhotos,savedVideos)
 
     return updatedPost;
   } catch (error: any) {
-    console.error('Error updating post:', error);
+    console.error("Error updating post:", error);
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
 };
 
 // Delete a post by its ID
 const deletePost = async (id: string) => {
-  try {
-    const deletedPost = await prisma.post.delete({
-      where: { id },
-    });
-    return deletedPost;
-  } catch (error: any) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Post not found!");
+
+  const existingPost = await prisma.post.findUnique({
+    where: { id },
+  });
+  if (!existingPost) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found!1");
   }
+
+  const deletedPost = await prisma.post.delete({
+    where: { id: id },
+  });
+  return deletedPost;
 };
 
 export const postServices = {
