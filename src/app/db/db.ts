@@ -4,7 +4,7 @@ import * as bcrypt from "bcrypt";
 import config from "../../config";
 
 export const initiateSuperAdmin = async () => {
-  const password="123456"
+  const password="12345678"
   const hashedPassword: string = await bcrypt.hash(
   password!,
     Number(config.bcrypt_salt_rounds)
