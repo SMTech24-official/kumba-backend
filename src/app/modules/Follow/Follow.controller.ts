@@ -66,7 +66,7 @@ const acceptConnectionRequest = catchAsync(
     const user = req.user as any;
 
     const result = await FollowService.acceptConnectionRequest(
-      user.id,
+      user.userId,
       requestId
     );
 

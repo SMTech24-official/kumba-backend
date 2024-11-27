@@ -1,7 +1,7 @@
 // Follow.routes: Module file for the Follow.routes functionality.
 import express from "express";
 import { FollowController } from "./Follow.controller";
-import auth from "../../middlewares/auth"; // Ensure auth middleware is working as expected
+import auth from "../../middlewares/auth"; 
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ router.post("/request", auth(), FollowController.sendConnectionRequest);
 router.put("/accept", auth(), FollowController.acceptConnectionRequest);
 
 // Decline a connection request
-router.put("/decline/:requestId", auth(), FollowController.declineConnectionRequest);
+router.delete("/decline/:requestId", auth(), FollowController.declineConnectionRequest);
 
 // Get the list of followers and the count
 router.get("/followers", auth(), FollowController.getFollowerList);
