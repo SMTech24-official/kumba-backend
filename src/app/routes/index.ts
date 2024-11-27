@@ -19,6 +19,10 @@ const moduleRoutes = [
     path: "/post",
     route: PostRouter,
   },
+  {
+    path: "/product",
+    route: PostRouter,
+  },
 
 ];
 

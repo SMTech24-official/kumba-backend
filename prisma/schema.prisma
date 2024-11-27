@@ -134,6 +134,8 @@ model Product {
   packageDetails String
   price          Float
   quantity       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
   Review         Review[]
   Cart           Cart[]
 }
@@ -161,7 +163,6 @@ enum ContentType {
   PHOTO
   VIDEO
 }
-
 
 enum UserRole {
   ADMIN
