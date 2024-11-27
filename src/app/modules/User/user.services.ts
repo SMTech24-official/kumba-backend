@@ -232,7 +232,7 @@ const getUserProfile = async (userId: string) => {
     where: {
       id: userId, // Use the userId to query the user
     },
-    
+
   });
 
   // If user is not found, throw an error
@@ -293,7 +293,7 @@ const updateBannerImage  = async (req:Request) => {
         id: user.id, // You can use email or other unique identifiers instead of userId if needed.
       },
       data: {
-        profilePic: imageUrl.Location,
+        bannerPic: imageUrl.Location,
       },
     });
 return updatedUser
