@@ -71,7 +71,7 @@ model Post {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Share     Share[]
-  Favirute  Favorite[]
+  Favorite  Favorite[]
 
   @@map("posts")
 }
