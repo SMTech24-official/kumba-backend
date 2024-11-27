@@ -2,21 +2,17 @@
 
 import { PrismaClient, Share, User } from "@prisma/client";
 import httpStatus from "http-status";
+import prisma from "../../../shared/prisma";
+import ApiError from "../../../errors/ApiErrors";
 
-const prisma = new PrismaClient();
-
-const SharePost = async (
-  user: User,
-  payload: { postId: string }
-): Promise<Share> => {
+const SharePost = async (user: any, payload: { postId: string }) => {
   const { postId } = payload;
-
   // Use a transaction to ensure atomicity
   const [newShare] = await prisma.$transaction([
     // Create a new share entry
     prisma.share.create({
       data: {
-        userId: user.id,
+        userId: user.userId,
         postId,
       },
     }),
@@ -31,74 +27,85 @@ const SharePost = async (
   return newShare;
 };
 
-// const GetSharedPosts = async (user: User) => {
-//   // Fetch posts shared by the user
-//   const sharedPosts = await prisma.share.findMany({
-//     where: { userId: user.id },
-//     include: {
-//       post: true, // Include the shared post details
-//     },
-//   });
+// get all posts
+const GetSharedPosts = async (user: User) => {
+  // Fetch posts shared by the user
+  const sharedPosts = await prisma.share.findMany({
+    where: { userId: user.id },
+    include: {
+      post: true,
+    },
+  });
 
-//   return sharedPosts;
-// };
+  return sharedPosts;
+};
 
-// const GetShareCount = async (postId: string): Promise<number> => {
-//   const post = await prisma.post.findUnique({
-//     where: { id: postId },
-//     select: { shareCount: true },
-//   });
+// get post share count
+const GetShareCount = async (postId: string) => {
+  const result = await prisma.post.findUnique({
+    where: { id: postId },
+    select: { shareCount: true },
+  });
 
-//   if (!post) {
-//     throw new ApiError(httpStatus.CREATED, "Post not found.");
-//   }
+  if (!result) {
+    throw new ApiError(httpStatus.CREATED, "Post not found.");
+  }
 
-//   return post.shareCount;
-// };
+  return result;
+};
 
-// const GetTimelinePosts = async (user: User) => {
-//   // Fetch posts shared by the user and optionally their friends
-//   const timelinePosts = await prisma.share.findMany({
-//     where: {
-//       OR: [
-//         { userId: user.id }, // User's shares
-//         // Add logic here if friends' shares are needed
-//       ],
-//     },
-//     include: {
-//       post: true, // Include the shared post details
-//     },
-//   });
+const GetTimelinePosts = async (user: any) => {
+  // Fetch posts shared by the user and optionally their friends
+  const timelinePosts = await prisma.share.findMany({
+    where: {
+      OR: [{ userId: user.userId }],
+    },
+    include: {
+      post: true,
+    },
+  });
 
-//   return timelinePosts;
-// };
+  return timelinePosts;
+};
 
-// const UnsharePost = async (user: User, postId: string): Promise<void> => {
-//   // Check if the share exists
-//   const existingShare = await prisma.share.findUnique({
-//     where: { userId_postId: { userId: user.id, postId } },
-//   });
+const UnsharePost = async (user: User, postId: string) => {
+  const { id: userId } = user;
 
-//   if (!existingShare) {
-//     throw new ApiError(httpStatus.CREATED, "Share not found.");
-//   }
+  // Start a transaction to ensure atomic operations
+  const result = await prisma.$transaction(async (prisma) => {
+    // Check if the share exists using the OR condition
+    const existingShare = await prisma.share.findFirst({
+      where: {
+        userId: userId,
+        postId: postId,
+      },
+    });
 
-//   // Delete the share
-//   await prisma.share.delete({
-//     where: { id: existingShare.id },
-//   });
+    if (!existingShare) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Share not found.");
+    }
 
-//   // Decrement the share count for the post
-//   await prisma.post.update({
-//     where: { id: postId },
-//     data: { shareCount: { decrement: 1 } },
-//   });
-// };
+    // Delete the share entry
+    const post = await prisma.share.delete({
+      where: { id: existingShare.id },
+    });
+
+    // Decrement the share count for the post
+    await prisma.post.update({
+      where: { id: postId },
+      data: { shareCount: { decrement: 1 } },
+    });
+
+    return post;
+  });
+
+  return result;
+};
 
 export const ShareService = {
   SharePost,
-//   GetSharedPosts,
-//   GetShareCount,
-//   GetTimelinePosts,
-//   UnsharePost,
+  GetSharedPosts,
+  GetShareCount,
+  GetTimelinePosts,
+  UnsharePost,
 };

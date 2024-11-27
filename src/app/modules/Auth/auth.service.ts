@@ -355,7 +355,7 @@ const refreshToken = async (token: string) => {
   };
 };
 
-const googleOauthLogin = async (user:User ) => {
+const googleOauthLogin = async (user: User) => {
   // Check if the user exists
   let existingUser = await prisma.user.findUnique({
     where: { email: user.email }, // Find user by email
