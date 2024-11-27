@@ -7,15 +7,16 @@ import { string } from "zod";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
 
-  const result = await AuthServices.loginUser(req.body);
-  res.cookie("token", result.token, { httpOnly: true });
+  const{refreshToken,accessToken} = await AuthServices.loginUser(req.body);
+  res.cookie("refreshToken",refreshToken, { httpOnly: true });
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: result,
+    data: {accessToken},
   });
 });
+
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
   // Clear the token cookie
   res.clearCookie("token", {
@@ -79,10 +80,7 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
 
-  const token = req.headers.authorization || "";
-
-  await AuthServices.resetPassword(token, req.body);
-
+  await AuthServices.resetPassword( req.body);
   sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -91,7 +89,58 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
   })
 });
 
+const verifyOtp = catchAsync(async (req: Request, res: Response) => {
 
+  const result= await AuthServices.verifyOtp(req.body)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "otp verified successfully!",
+    data: result
+})
+});
+const resendOtp = catchAsync(async (req: Request, res: Response) => {
+const email=req.body.email
+ const result= await AuthServices.resendOtp(email)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "otp resend successfully!",
+    data: result
+})
+});
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies;
+
+ const result= await AuthServices.refreshToken(refreshToken as string)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "otp resend successfully!",
+    data: result
+})
+});
+
+
+// const googleLogin = catchAsync(async (req, res) => {
+//   const result = await AuthServices.googleLogin(req.body as any);
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: 'google Login successfully!',
+//     data: result,
+//   });
+// });
+const googleOauthLogin = catchAsync(async (req, res) => {
+  const result = await AuthServices.googleOauthLogin(req.user as any);
+  ;
+    sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'google Login successfully!',
+    data: result,
+  });
+});
 
 export const AuthController = {
   loginUser,
@@ -99,5 +148,9 @@ export const AuthController = {
   getMyProfile,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyOtp,
+  resendOtp,
+  refreshToken,
+  googleOauthLogin
 };

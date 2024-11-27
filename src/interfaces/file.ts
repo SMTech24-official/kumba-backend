@@ -1,4 +1,3 @@
-"use strict";
 export type ICloudinaryResponse = {
     asset_id: string;
     public_id: string

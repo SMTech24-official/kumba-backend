@@ -5,8 +5,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import GlobalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
-
-
+import cron from "node-cron"
+import { deleteUnverifiedUsers } from "./shared/deleteUnverifiedUser";
+import passport from "passport"; 
 
 const app: Application = express();
 export const corsOptions = {
@@ -28,13 +29,23 @@ app.get("/", (req: Request, res: Response) => {
   res.send({
     success:true,
     statusCode: httpStatus.OK,
-    message: "Welcome to Rydleap API!",
+    message: "HI Developer!",
   });
 });
 
 // Router setup
 app.use("/api/v1", router);
 
+// cron.schedule("*/1 * * * *", async () => {
+//   try {
+//     await deleteUnverifiedUsers();
+//     console.log("Checked and deleted unverified users successfully.");
+//   } catch (error) {
+//     console.error("Error deleting unverified users:", error);
+//   }
+// });
+app.use(passport.initialize()); // Initialize Passport
+app.use(passport.session());
 // Error handling middleware
 app.use(GlobalErrorHandler);
 
