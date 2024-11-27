@@ -9,10 +9,17 @@ const addPost = async (req: Request) => {
   try {
     const videoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['videos'] || [];
     const photoFiles = (req.files as { [fieldname: string]: Express.Multer.File[] })['photos'] || [];
-
+    let payload
+    if(req.body.data){
+     payload = JSON.parse(req.body.data);
+    }
+    const user=await prisma.user.findFirstOrThrow({where:{id:payload.userId}})
+    if(!user){
+      throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
+    }
     // Upload videos and photos concurrently
-    const uploadPhotoPromises = photoFiles.map((photo) =>fileUploader. uploadToCloudinary(photo));
-    const uploadVideoPromises = videoFiles.map((video) =>fileUploader. uploadToCloudinary(video));
+    const uploadPhotoPromises = photoFiles.map((photo) =>fileUploader.uploadToDigitalOcean(photo));
+    const uploadVideoPromises = videoFiles.map((video) =>fileUploader.uploadToDigitalOcean(video));
 
     const [photoResults, videoResults] = await Promise.all([
       Promise.all(uploadPhotoPromises),
@@ -21,15 +28,12 @@ const addPost = async (req: Request) => {
 
     // Save metadata for videos and photos
     const savedPhotos = photoResults.map((result) => ({
-      url: result.secure_url,
+      url: result.Location,
     }));
     const savedVideos = videoResults.map((result) => ({
-      url: result.secure_url,
+      url: result.Location,
     }));
-let payload
-  if(req.body.data){
-   payload = JSON.parse(req.body.data);
-  }
+
     const data={
       ...payload,
       photos: savedPhotos,
