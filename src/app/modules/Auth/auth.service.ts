@@ -24,6 +24,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
       "User not found! with this email " + payload.email
     );
   }
+  console.log(payload)
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
     userData.password!
@@ -34,7 +35,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   }
   const accessToken = jwtHelpers.generateToken(
     {
-      userId: userData.id,
+      id: userData.id,
       firstName: userData.firstName,
       lastName: userData.lastName,
       profilePic: userData.profilePic,
@@ -47,7 +48,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
 
   const refreshToken = jwtHelpers.generateToken(
     {
-      userId: userData.id,
+      id: userData.id,
       firstName: userData.firstName,
       lastName: userData.lastName,
       profilePic: userData.profilePic,
@@ -334,7 +335,7 @@ const refreshToken = async (token: string) => {
 
   // Prepare the payload for the new access token
   const jwtPayload = {
-    userId: user.id,
+    id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     profilePic: user.profilePic,
@@ -374,7 +375,7 @@ const googleOauthLogin = async (user: User) => {
 
   // Generate JWT for the logged-in user
   const jwtPayload = {
-    userId: existingUser.id,
+    id: existingUser.id,
     firstName: existingUser.firstName,
     lastName: existingUser.lastName,
     profilePic: existingUser.profilePic,

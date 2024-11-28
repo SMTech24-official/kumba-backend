@@ -1,10 +1,14 @@
 import { UserRole } from "@prisma/client";
 import prisma from "../../shared/prisma";
 import * as bcrypt from "bcrypt";
+import config from "../../config";
 
 export const initiateSuperAdmin = async () => {
-  const password="123456"
-  const hashedPassword = await bcrypt.hash(password as string, 10);
+  const password="12345678"
+  const hashedPassword: string = await bcrypt.hash(
+  password!,
+    Number(config.bcrypt_salt_rounds)
+  );
   const payload: any = {
     firstName:"dhadsh",
     lastName: "Cailling",

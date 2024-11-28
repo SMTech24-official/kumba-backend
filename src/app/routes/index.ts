@@ -4,7 +4,9 @@ import { AuthRoutes } from "../modules/Auth/auth.routes";
 import { PostRouter } from "../modules/Post/post.route";
 import { ShareRoutes } from "../modules/Share/Share.routes";
 import { FollowRoutes } from "../modules/Follow/Follow.routes";
-import { CommentRoutes } from "../modules/Comment/Comment.routes";
+import { awardRoutes } from "../modules/Award/award.routes";
+import { educationRoutes } from "../modules/Education/education.route";
+import { LikeRouter } from "../modules/Like/like.routes";import { CommentRoutes } from "../modules/Comment/Comment.routes";
 
 
 const router = express.Router();
@@ -31,6 +33,17 @@ const moduleRoutes = [
     route: FollowRoutes,
   },
   {
+    path: "/awards",
+    route: awardRoutes,
+  },
+  {
+    path: "/education",
+    route: educationRoutes,
+  },
+  {
+    path: "/like",
+    route:LikeRouter ,
+  },  {
     path: "/comments",
     route: CommentRoutes,
   },

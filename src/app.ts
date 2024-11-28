@@ -44,8 +44,7 @@ app.use("/api/v1", router);
 //     console.error("Error deleting unverified users:", error);
 //   }
 // });
-app.use(passport.initialize()); // Initialize Passport
-app.use(passport.session());
+
 // Error handling middleware
 app.use(GlobalErrorHandler);
 
@@ -60,5 +59,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     },
   });
 });
-
+app.use(passport.initialize()); // Initialize Passport
+app.use(passport.session());
 export default app;
