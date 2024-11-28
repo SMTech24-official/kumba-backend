@@ -2,6 +2,10 @@ import express from "express";
 import { userRoutes } from "../modules/User/user.route";
 import { AuthRoutes } from "../modules/Auth/auth.routes";
 import { PostRouter } from "../modules/Post/post.route";
+import { productsRoutes } from "../modules/product/product.routes";
+import { reviewRoutes } from "../modules/review/review.route";
+import { cartRoutes } from "../modules/cart/cart.routes";
+import { favouriteRoutes } from "../modules/favourite/favourite.route";
 import { ShareRoutes } from "../modules/Share/Share.routes";
 import { FollowRoutes } from "../modules/Follow/Follow.routes";
 import { awardRoutes } from "../modules/Award/award.routes";
@@ -23,6 +27,22 @@ const moduleRoutes = [
   {
     path: "/post",
     route: PostRouter,
+  },
+  {
+    path: "/product",
+    route: productsRoutes,
+  },
+  {
+    path: "/review",
+    route: reviewRoutes,
+  },
+  {
+    path: "/cart",
+    route: cartRoutes,
+  },
+  {
+    path: "/favorites",
+    route: favouriteRoutes,
   },
   {
     path: "/share",

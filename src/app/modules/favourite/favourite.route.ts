@@ -1,0 +1,24 @@
+import express from "express";
+import { FavouriteController } from "./favourite.controller";
+
+const router = express.Router();
+
+// Route to toggle a favorite (add/remove)
+router.post("/toggle", FavouriteController.toggleFavourite);
+
+// Route to get all favorites (admin)
+router.get("/", FavouriteController.getAllFavourites);
+
+// Route to get a favorite by ID
+router.get("/:id", FavouriteController.getFavouriteById);
+
+// Route to update a favorite
+router.put("/:id", FavouriteController.updateFavourite);
+
+// Route to delete a favorite by ID
+router.delete("/:id", FavouriteController.deleteFavourite);
+
+// Route to get all favorites of a user
+router.get("/user/:userId", FavouriteController.getFavouritesByUser);
+
+export const favouriteRoutes = router;

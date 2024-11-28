@@ -7,8 +7,16 @@ import {
   PutObjectCommand,
   ObjectCannedACL,
 } from "@aws-sdk/client-s3";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs/promises";
+import {
+  S3Client,
+  PutObjectCommand,
+  ObjectCannedACL,
+} from "@aws-sdk/client-s3";
 import { ICloudinaryResponse, IFile } from "../interfaces/file";
 import config from "../config";
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,9 +33,20 @@ interface UploadResponse {
   Key: string;
   ETag?: string;
 }
+interface UploadResponse {
+  Location: string; // This will store the formatted URL with "https://"
+  Bucket: string;
+  Key: string;
+  ETag?: string;
+}
 const upload = multer({ storage: storage });
 
 // upload single image
+const uploadSingle = upload.single("image");
+const updateProfile = upload.fields([
+  { name: "profile", maxCount: 1 },
+  { name: "banner", maxCount: 1 },
+]);
 const uploadSingle = upload.single("image");
 const updateProfile = upload.fields([
   { name: "profile", maxCount: 1 },
@@ -44,14 +63,20 @@ cloudinary.config({
   cloud_name: "dezfej6wq",
   api_key: config.cloudinary.api_key,
   api_secret: config.cloudinary.api_secret, // Click 'View API Keys' above to copy your API secret
+cloudinary.config({
+  cloud_name: "dezfej6wq",
+  api_key: config.cloudinary.api_key,
+  api_secret: config.cloudinary.api_secret, // Click 'View API Keys' above to copy your API secret
 });
 const uploadToCloudinary = async (file: Express.Multer.File): Promise<any> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       file.path,
       { resource_type: "auto" }, // Auto-detect file type
+      { resource_type: "auto" }, // Auto-detect file type
       (error, result) => {
         // Delete the local file after uploading
+        fs.unlink(file.path);
         fs.unlink(file.path);
 
         if (error) {
@@ -125,7 +150,10 @@ export const fileUploader = {
   upload,
   uploadSingle,
   updateProfile,
+  updateProfile,
   uploadPost,
+  uploadToCloudinary,
+  uploadToDigitalOcean,
   uploadToCloudinary,
   uploadToDigitalOcean,
 };
