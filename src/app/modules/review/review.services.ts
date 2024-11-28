@@ -34,7 +34,7 @@ const createReviewIntoDB = async (payload: TReview) => {
 const getReviewsWithUser = async () => {
   const reviews = await prisma.review.findMany({
     include: {
-      user: {
+      User: {
         select: {
           id: true,
           firstName: true,
@@ -42,7 +42,7 @@ const getReviewsWithUser = async () => {
           email: true,
         },
       }, // Include the related user data
-      product: {
+      Product: {
         select: {
           id: true,
           title: true,
@@ -67,7 +67,7 @@ const getSingleProductReviewsWithUser = async (id: any) => {
       createdAt: "desc",
     },
     include: {
-      user: {
+      User: {
         select: {
           id: true,
           firstName: true,
@@ -75,7 +75,7 @@ const getSingleProductReviewsWithUser = async (id: any) => {
           email: true,
         },
       }, // Include the related user data
-      product: {
+      Product: {
         select: {
           id: true,
           title: true,
