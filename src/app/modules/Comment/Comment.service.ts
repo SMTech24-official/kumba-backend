@@ -18,8 +18,8 @@ const addComment = async (user: any, payload: any): Promise<Comment> => {
     );
   }
 
-  return prisma.comment.create({
-    data: { userId: user.userId, ...payload },
+  return await prisma.comment.create({
+    data: { userId: user.id, ...payload },
   });
 };
 
@@ -57,7 +57,7 @@ const updateComment = async (
     );
   }
 
-  if (existingComment.userId !== user.userId) {
+  if (existingComment.userId !== user.id) {
     throw new ApiError(
       httpStatus.FORBIDDEN,
       "You are not authorized to update this comment."
@@ -86,7 +86,7 @@ const deleteComment = async (user: any, commentId: string) => {
     );
   }
 
-  if (existingComment.userId !== user.userId) {
+  if (existingComment.userId !== user.id) {
     throw new ApiError(
       httpStatus.FORBIDDEN,
       "You are not authorized to delete this comment."

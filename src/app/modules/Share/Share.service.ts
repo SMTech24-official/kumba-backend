@@ -12,7 +12,7 @@ const SharePost = async (user: any, payload: { postId: string }) => {
     // Create a new share entry
     prisma.share.create({
       data: {
-        userId: user.userId,
+        userId: user.id,
         postId,
       },
     }),
@@ -58,7 +58,7 @@ const GetTimelinePosts = async (user: any) => {
   // Fetch posts shared by the user and optionally their friends
   const timelinePosts = await prisma.share.findMany({
     where: {
-      OR: [{ userId: user.userId }],
+      OR: [{ userId: user.id }],
     },
     include: {
       post: true,

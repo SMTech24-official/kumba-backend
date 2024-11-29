@@ -315,12 +315,12 @@ const refreshToken = async (token: string) => {
     config.jwt.refresh_token_secret as string
   );
 
-  const { userId } = decoded;
+  const { id } = decoded;
 
   // Check if the user exists in the database
   const user = await prisma.user.findUnique({
     where: {
-      id: userId, // Prisma uses `id` instead of `_id` by default
+      id: id, // Prisma uses `id` instead of `_id` by default
     },
   });
 

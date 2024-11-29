@@ -9,7 +9,7 @@ import httpStatus from "http-status";
 const getFollowerList = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as any; // Get the user from the authenticated request
 
-  const followers = await FollowService.getFollowerList(user.userId);
+  const followers = await FollowService.getFollowerList(user.id);
   const followerCount = followers.length;
 
   sendResponse(res, {
@@ -26,7 +26,7 @@ const getPendingRequestsList = catchAsync(
     const user = req.user as any; // Get the user from the authenticated request
 
     const pendingRequests = await FollowService.getPendingRequestsList(
-      user.userId
+      user.id
     );
     const pendingRequestsCount = pendingRequests.length;
 
@@ -46,7 +46,7 @@ const sendConnectionRequest = catchAsync(
     const user = req.user as any;
 
     const result = await FollowService.sendConnectionRequest(
-      user.userId,
+      user.id,
       followingId
     );
 
@@ -66,7 +66,7 @@ const acceptConnectionRequest = catchAsync(
     const user = req.user as any;
 
     const result = await FollowService.acceptConnectionRequest(
-      user.userId,
+      user.id,
       requestId
     );
 
