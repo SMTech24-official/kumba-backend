@@ -8,12 +8,12 @@ import { string } from "zod";
 const loginUser = catchAsync(async (req: Request, res: Response) => {
 
   const{refreshToken,accessToken} = await AuthServices.loginUser(req.body);
-  res.cookie("refreshToken",refreshToken, { httpOnly: true });
+  res.cookie("refreshToken",refreshToken, { httpOnly: true,secure:true , sameSite: "lax",});
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: {accessToken},
+    data: {accessToken,refreshToken},
   });
 });
 
@@ -28,6 +28,7 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
+   
     message: "User Successfully logged out",
     data: null,
   });

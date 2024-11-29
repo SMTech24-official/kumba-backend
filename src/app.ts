@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import GlobalErrorHandler from "./app/middlewares/globalErrorHandler";
 import router from "./app/routes";
 import cron from "node-cron"
-import { deleteUnverifiedUsers } from "./shared/deleteUnverifiedUser";
 import passport from "passport"; 
 
 const app: Application = express();
