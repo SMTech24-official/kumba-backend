@@ -15,6 +15,8 @@ router.post(
   userController.createUser
 );
 // *!get all  user
+router.get("/user/:id", userController.getUserById);
+// get single users
 router.get("/", userController.getUsers);
 
 // *!profile user
@@ -23,11 +25,12 @@ router.get("/", userController.getUsers);
 router.put(
   "/profile",
   validateRequest(UserValidation.userUpdateSchema), // Validate request payload
-  auth(UserRole.ADMIN, UserRole.USER),               // Ensure user is authenticated and authorized (user or admin)
-  userController.updateProfile                       // Call the update profile controller
+  auth(UserRole.ADMIN, UserRole.USER), // Ensure user is authenticated and authorized (user or admin)
+  userController.updateProfile // Call the update profile controller
 );
 // Route to get user profile
-router.get('/get-me', 
+router.get(
+  "/get-me",
   auth(UserRole.ADMIN, UserRole.USER), // Ensure user is authenticated
   userController.getUserProfile // Call the controller to get the user profile
 );
@@ -42,7 +45,17 @@ router.get('/:userId',
   userController.getSingleUser // Call the controller to get the user profile
 );
 // Handle the profile image upload
-router.put('/profile-image', fileUploader.upload.single('profilePic'),auth(UserRole.ADMIN, UserRole.USER), userController.updateProfileImage);
-router.put('/banner-image', fileUploader.upload.single('bannerPic'),auth(UserRole.ADMIN, UserRole.USER), userController.updateBannerImage);
+router.put(
+  "/profile-image",
+  fileUploader.upload.single("profilePic"),
+  auth(UserRole.ADMIN, UserRole.USER),
+  userController.updateProfileImage
+);
+router.put(
+  "/banner-image",
+  fileUploader.upload.single("bannerPic"),
+  auth(UserRole.ADMIN, UserRole.USER),
+  userController.updateBannerImage
+);
 
 export const userRoutes = router;

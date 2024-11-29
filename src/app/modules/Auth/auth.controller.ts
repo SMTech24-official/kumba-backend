@@ -19,7 +19,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
   // Clear the token cookie
-  res.clearCookie("token", {
+  res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -133,15 +133,22 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 const googleOauthLogin = catchAsync(async (req, res) => {
-  const result = await AuthServices.googleOauthLogin(req.user as any);
+ const { refreshToken, accessToken } = await AuthServices.googleOauthLogin(
+   req.user as any
+ );
+   res.cookie("refreshToken", refreshToken, {
+     httpOnly: true,
+     secure: true,
+     sameSite: "lax",
+   });
   ;
-    sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'google Login successfully!',
-    data: result,
-  });
-  res.redirect("")
+  //   sendResponse(res, {
+  //   statusCode: httpStatus.OK,
+  //   success: true,
+  //   message: 'google Login successfully!',
+  //   data: result,
+  // });
+  res.redirect(`http://localhost:3000/auth/login?accessToken=${accessToken}`);
 });
 
 export const AuthController = {
