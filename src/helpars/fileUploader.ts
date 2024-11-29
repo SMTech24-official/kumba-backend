@@ -13,7 +13,8 @@ import config from "../config";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "uploads"));
+    cb(null, path.join("/var/www", "uploads"));
+    //cb(null, path.join(process.cwd(), "uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -77,7 +78,7 @@ const uploadToDigitalOcean = async (
     // Ensure the file exists before attempting to upload it
     await fs.access(file.path);
 
-    const Key = `ayoku/${Date.now()}_${file.originalname}`;
+    const Key = `kumba/${Date.now()}_${file.originalname}`;
     const uploadParams = {
       Bucket: process.env.DO_SPACE_BUCKET || "",
       Key,
