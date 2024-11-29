@@ -24,7 +24,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
       "User not found! with this email " + payload.email
     );
   }
-  console.log(payload)
+
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
     userData.password!
