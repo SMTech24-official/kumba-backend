@@ -24,6 +24,10 @@ const loginUser = async (payload: { email: string; password: string }) => {
       "User not found! with this email " + payload.email
     );
   }
+  if(!userData.isVerified){
+    throw new ApiError(httpStatus.FORBIDDEN, "User is not verified!");
+  }
+
 
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
@@ -58,6 +62,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     config.jwt.refresh_token_secret as Secret,
     config.jwt.refresh_token_expires_in as string
   );
+
   return { accessToken: accessToken, refreshToken: refreshToken };
 };
 
@@ -388,9 +393,22 @@ const googleOauthLogin = async (user: User) => {
     config.jwt.jwt_secret as string, // JWT secret from config
     config.jwt.expires_in as string // Token expiration time
   );
-
+  
+  const refreshToken = jwtHelpers.generateToken(
+    {
+      id: existingUser.id,
+      firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
+      profilePic: existingUser.profilePic,
+      email: existingUser.email,
+      role: existingUser.role,
+    },
+    config.jwt.refresh_token_secret as Secret,
+    config.jwt.refresh_token_expires_in as string
+  );
   return {
     accessToken,
+    refreshToken,
   };
 };
 export const AuthServices = {
