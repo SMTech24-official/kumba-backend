@@ -33,6 +33,18 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+// get user by id
+const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const userID = req.params.id;
+  console.log(userID)
+  const result = await userService.getUserById(userID);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users retrieve successfully!",
+    data: result,
+  });
+});
 
 
 // Controller to update the user profile
@@ -103,6 +115,7 @@ const updateBannerImage = catchAsync(async (req: Request, res: Response) => {
 
 export const userController = {
   createUser,
+  getUserById,
   getUsers,
   updateProfile,
   getUserProfile,

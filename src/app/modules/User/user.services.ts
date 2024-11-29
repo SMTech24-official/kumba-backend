@@ -1,4 +1,4 @@
-import { string } from 'zod';
+import { string } from "zod";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
 import { IUser, IUserFilterRequest } from "./user.interface";
@@ -34,7 +34,7 @@ const createUserIntoDb = async (payload: User) => {
       );
     }
   }
-  payload.role="USER"
+  payload.role = "USER";
   const hashedPassword: string = await bcrypt.hash(
     payload.password!,
     Number(config.bcrypt_salt_rounds)
@@ -43,8 +43,8 @@ const createUserIntoDb = async (payload: User) => {
 
   // Set OTP expiration time to 5 minutes from now
   const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
-  payload.otp=otp
-  payload.OtpExpires=otpExpires
+  payload.otp = otp;
+  payload.OtpExpires = otpExpires;
   const result = await prisma.user.create({
     data: { ...payload, password: hashedPassword },
     select: {
@@ -58,7 +58,7 @@ const createUserIntoDb = async (payload: User) => {
     },
   });
 
-  if (result){
+  if (result) {
     const html = `
     <div style="font-family: Arial, sans-serif; color: #333; padding: 30px; background: linear-gradient(135deg, #6c63ff, #3f51b5); border-radius: 8px;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px;">
@@ -90,9 +90,9 @@ const createUserIntoDb = async (payload: User) => {
     </div>
     
       `;
-    
-      // Send the OTP to user's email
-      await sendEmail(result.email, html, "OTP verifications mail");
+
+    // Send the OTP to user's email
+    await sendEmail(result.email, html, "OTP verifications mail");
   }
   return result;
 };
@@ -155,7 +155,7 @@ const getUsersFromDb = async (
   });
 
   if (!result || result.length === 0) {
-    return {message:"No Users Found"}
+    return { message: "No Users Found" };
   }
   return {
     meta: {
@@ -166,15 +166,28 @@ const getUsersFromDb = async (
     data: result,
   };
 };
+// reterive single users from the database with id
+const getUserById = async (userId: string) => {
+  const result = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return result;
+};
 
 // Service function to update user profile
 const updateProfile = async (user: JwtPayload, payload: User) => {
   // Find user by email and ID (you can change this if you prefer a different method of identification)
-  console.log(user)
+  console.log(user);
   const userInfo = await prisma.user.findUnique({
     where: {
       email: user.email, // This assumes email is a unique identifier
-      id: user.id,       // Ensure both email and ID match
+      id: user.id, // Ensure both email and ID match
     },
   });
 
@@ -217,13 +230,14 @@ const updateProfile = async (user: JwtPayload, payload: User) => {
   });
 
   if (!result) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update user profile");
+    throw new ApiError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to update user profile"
+    );
   }
 
   return result;
 };
-
-
 
 // Service function to get user profile by userId
 const getUserProfile = async (userId: string) => {
@@ -232,7 +246,6 @@ const getUserProfile = async (userId: string) => {
     where: {
       id: userId, // Use the userId to query the user
     },
-
   });
 
   // If user is not found, throw an error
@@ -243,68 +256,64 @@ const getUserProfile = async (userId: string) => {
   return user;
 };
 // Service function to get user profile by userId
-const updateProfileImage  = async (req:Request) => {
+const updateProfileImage = async (req: Request) => {
+  const user: JwtPayload | undefined = req.user;
 
-    const user:JwtPayload|undefined= req.user;
+  const file = req.file; // Access the uploaded file.
 
-    const file = req.file; // Access the uploaded file.
+  if (!file) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Profile image is required.");
+  }
 
-    if (!file) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Profile image is required.');
-    }
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "User not authenticated.");
+  }
+  // Upload the image to DigitalOcean (or your cloud storage service)
+  const imageUrl = await fileUploader.uploadToDigitalOcean(file);
 
-    if(!user){
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated.');
-    }
-    // Upload the image to DigitalOcean (or your cloud storage service)
-    const imageUrl = await fileUploader.uploadToDigitalOcean(file);
-
-    // Update the user's profile with the new image URL
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: user.id, // You can use email or other unique identifiers instead of userId if needed.
-      },
-      data: {
-        profilePic: imageUrl.Location,
-      },
-    });
-return updatedUser
-  
+  // Update the user's profile with the new image URL
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: user.id, // You can use email or other unique identifiers instead of userId if needed.
+    },
+    data: {
+      profilePic: imageUrl.Location,
+    },
+  });
+  return updatedUser;
 };
-const updateBannerImage  = async (req:Request) => {
+const updateBannerImage = async (req: Request) => {
+  const user: JwtPayload | undefined = req.user;
 
-    const user:JwtPayload|undefined= req.user;
+  const file = req.file; // Access the uploaded file.
 
-    const file = req.file; // Access the uploaded file.
+  if (!file) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Profile image is required.");
+  }
 
-    if (!file) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Profile image is required.');
-    }
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "User not authenticated.");
+  }
+  // Upload the image to DigitalOcean (or your cloud storage service)
+  const imageUrl = await fileUploader.uploadToDigitalOcean(file);
 
-    if(!user){
-      throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated.');
-    }
-    // Upload the image to DigitalOcean (or your cloud storage service)
-    const imageUrl = await fileUploader.uploadToDigitalOcean(file);
-
-    // Update the user's profile with the new image URL
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: user.id, // You can use email or other unique identifiers instead of userId if needed.
-      },
-      data: {
-        bannerPic: imageUrl.Location,
-      },
-    });
-return updatedUser
-  
+  // Update the user's profile with the new image URL
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: user.id, // You can use email or other unique identifiers instead of userId if needed.
+    },
+    data: {
+      bannerPic: imageUrl.Location,
+    },
+  });
+  return updatedUser;
 };
 export const userService = {
   createUserIntoDb,
+  getUserById,
   getUsersFromDb,
   updateProfile,
   getUserProfile,
   updateProfileImage,
-  updateBannerImage
-  
+  updateBannerImage,
 };
