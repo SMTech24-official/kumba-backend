@@ -37,6 +37,7 @@ model User {
   Favirute   Favorite[]
   Cart       Cart[]
   Review     Review[]
+  Payment    Payment[]
 
   @@map("users")
 }
@@ -125,21 +126,21 @@ model Favorite {
   postId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
   post   Post   @relation(fields: [postId], references: [id])
-  
 }
 
 model Product {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
   title          String
   image          String
   description    String
   packageDetails String
   price          Float
   quantity       Int
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
   updatedAt      DateTime
   Review         Review[]
   Cart           Cart[]
+  Payment        Payment[]
 }
 
 model Review {
@@ -163,6 +164,20 @@ model Cart {
   updatedAt DateTime
   user      User     @relation(fields: [userId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  productId       String   @db.ObjectId
+  amount          Int
+  currency        String
+  status          String
+  paymentIntentId String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  product         Product  @relation(fields: [productId], references: [id])
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 enum ContentType {
