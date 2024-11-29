@@ -18,6 +18,7 @@ router.post(
 router.get("/", userController.getUsers);
 
 // *!profile user
+
 // Route to update user profile
 router.put(
   "/profile",
@@ -29,6 +30,16 @@ router.put(
 router.get('/get-me', 
   auth(UserRole.ADMIN, UserRole.USER), // Ensure user is authenticated
   userController.getUserProfile // Call the controller to get the user profile
+);
+router.get('/get-all', 
+  auth(UserRole.ADMIN), // Ensure user is authenticated
+  userController.getAllUsers // Call the controller to get the user profile
+);
+// get single user profile 
+
+router.get('/:userId', 
+  auth(UserRole.ADMIN, UserRole.USER), // Ensure user is authenticated
+  userController.getSingleUser // Call the controller to get the user profile
 );
 // Handle the profile image upload
 router.put('/profile-image', fileUploader.upload.single('profilePic'),auth(UserRole.ADMIN, UserRole.USER), userController.updateProfileImage);

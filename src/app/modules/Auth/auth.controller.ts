@@ -8,7 +8,7 @@ import { string } from "zod";
 const loginUser = catchAsync(async (req: Request, res: Response) => {
 
   const{refreshToken,accessToken} = await AuthServices.loginUser(req.body);
-  res.cookie("refreshToken",refreshToken, { httpOnly: true,secure:true , sameSite: "lax",});
+  res.cookie("refreshToken",refreshToken, { httpOnly: true});
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -141,6 +141,7 @@ const googleOauthLogin = catchAsync(async (req, res) => {
     message: 'google Login successfully!',
     data: result,
   });
+  res.redirect("")
 });
 
 export const AuthController = {

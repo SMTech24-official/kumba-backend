@@ -299,12 +299,36 @@ const updateBannerImage  = async (req:Request) => {
 return updatedUser
   
 };
+const getAllUsers=async()=>{
+  const users=await prisma.user.findMany();
+  return users;
+}
+// get single user profile 
+
+const getSingleUser = async (userId: string) => {
+  // Fetch user profile from the database
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId, // Use the userId to query the user
+    },
+
+  });
+
+  // If user is not found, throw an error
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  return user;
+};
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
   updateProfile,
   getUserProfile,
   updateProfileImage,
-  updateBannerImage
+  updateBannerImage,
+  getAllUsers,
+  getSingleUser
   
 };

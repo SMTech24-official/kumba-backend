@@ -81,6 +81,12 @@ const getAllPosts = async (page: number = 1, limit: number = 10) => {
     const posts = await prisma.post.findMany({
       skip: (page - 1) * limit,
       take: limit,
+   include:{
+    user:true
+   
+   }
+       
+     
     });
     return posts;
   } catch (error: any) {

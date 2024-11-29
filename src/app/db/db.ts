@@ -14,12 +14,12 @@ export const initiateSuperAdmin = async () => {
     lastName: "Hossain",
     email: "belalhossain22000@gmail.com",
     password: hashedPassword,
-    role: UserRole.SUPER_ADMIN,
+    role: UserRole.ADMIN,
   };
 
   const isExistUser = await prisma.user.findUnique({
     where: {
-      email: payload.email,
+      email: payload.email
     },
   });
 
