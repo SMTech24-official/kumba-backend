@@ -220,9 +220,9 @@ const verifyOtp = async (payload: { email: string; otp: string }) => {
   }
 
   // Check if the user is already verified
-  if (user.isVerified) {
-    throw new ApiError(httpStatus.FORBIDDEN, "You are already verified");
-  }
+  // if (user.isVerified) {
+  //   throw new ApiError(httpStatus.FORBIDDEN, "You are already verified");
+  // }
 
   // Check if the OTP is valid and not expired
   if (

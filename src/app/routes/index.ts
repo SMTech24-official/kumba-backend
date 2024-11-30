@@ -6,7 +6,8 @@ import { productsRoutes } from "../modules/product/product.routes";
 import { reviewRoutes } from "../modules/review/review.route";
 import { cartRoutes } from "../modules/cart/cart.routes";
 import { favouriteRoutes } from "../modules/favourite/favourite.route";
-import { ShareRoutes } from "../modules/Share/Share.routes";
+import { paymentRoutes } from "../modules/stripe/stripe.routes";
+import { orderRoutes } from "../modules/order/order.routes";import { ShareRoutes } from "../modules/Share/Share.routes";
 import { FollowRoutes } from "../modules/Follow/Follow.routes";
 import { awardRoutes } from "../modules/Award/award.routes";
 import { educationRoutes } from "../modules/Education/education.route";
@@ -45,6 +46,13 @@ const moduleRoutes = [
     route: favouriteRoutes,
   },
   {
+    path: "/stripe",
+    route: paymentRoutes,
+  },
+  {
+    path: "/orders",
+    route: orderRoutes,
+  },  {
     path: "/share",
     route: ShareRoutes,
   },

@@ -5,7 +5,6 @@ import { TProduct } from "./product.interface";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { IPaginationOptions } from "../../../interfaces/paginations";
 
-
 const createProductIntoDB = async (payload: TProduct) => {
   const result = await prisma.product.create({
     data: {
@@ -15,6 +14,8 @@ const createProductIntoDB = async (payload: TProduct) => {
       packageDetails: payload.packageDetails,
       price: payload.price,
       quantity: payload.quantity,
+      regularPrice: payload.regularPrice,
+      isDeleted: payload.isDeleted || false,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -55,7 +56,11 @@ const getAllProductsIntoDB = async (
   const result = await prisma.product.findMany({
     where: {
       AND: andConditions.length ? andConditions : undefined,
+      isDeleted: false,
       ...filterData,
+    },
+    include: {
+      Review: true,
     },
     skip,
     take: limit,
@@ -69,6 +74,9 @@ const getProductByIdFromDB = async (id: string) => {
     where: {
       id,
     },
+    include: {
+      Review: true,
+    },
   });
   return result;
 };
@@ -77,7 +85,6 @@ const updateProductByIdInDB = async (
   id: string,
   payload: Partial<TProduct>
 ) => {
-
   const result = await prisma.product.update({
     where: {
       id,
@@ -91,12 +98,16 @@ const updateProductByIdInDB = async (
 };
 
 const deleteProductFromDB = async (id: string) => {
-  const result = await prisma.product.delete({
+  const result = await prisma.product.update({
     where: {
       id,
     },
+    data: {
+      isDeleted: true, // Mark the product as deleted
+      updatedAt: new Date(), // Update the timestamp
+    },
   });
-  return result;
+  return getAllProductsIntoDB;
 };
 
 export const productServices = {
