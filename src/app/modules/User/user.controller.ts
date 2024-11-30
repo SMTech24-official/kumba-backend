@@ -33,6 +33,8 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+
 // get user by id
 const getUserById = catchAsync(async (req: Request, res: Response) => {
   const userID = req.params.id;
@@ -110,38 +112,9 @@ const updateBannerImage = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  // Get the authenticated user from req.user
-  const user = req.user as JwtPayload;
 
-  // Call the service function to fetch user profile
-  const result = await userService.getAllUsers();
-
-  // Send the response with user data
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "User Cover photo upload successfully!",
-    data: result,
-  });
-});
 // get single user 
 
-const getSingleUser = catchAsync(async (req: Request, res: Response) => {
-  // Get the authenticated user from req.user
-  
-const userId=req.params.userId
-  // Call the service function to fetch user profile
-  const result = await userService.getSingleUser(userId);
-
-  // Send the response with user data
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "User Cover photo upload successfully!",
-    data: result,
-  });
-});
 const updateUserById = catchAsync(async (req: Request, res: Response) => {
   // Get the authenticated user from req.user
   
@@ -168,8 +141,7 @@ export const userController = {
   getUserProfile,
   updateProfileImage,
   updateBannerImage,
-  getAllUsers,
-  getSingleUser,
+ 
   updateUserById
 
 };

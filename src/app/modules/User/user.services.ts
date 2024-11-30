@@ -14,7 +14,9 @@ import { sendEmail } from "../../../shared/sendEmail";
 import { JwtPayload } from "jsonwebtoken";
 import { Request } from "express";
 import { fileUploader } from "../../../helpars/fileUploader";
-// Create a new user in the database.
+
+
+//! Create a new user in the database.
 const createUserIntoDb = async (payload: User) => {
   const existingUser = await prisma.user.findFirst({
     where: { email: payload.email },
@@ -97,7 +99,7 @@ const createUserIntoDb = async (payload: User) => {
   return result;
 };
 
-// reterive all users from the database also searcing anf filetering
+//! reterive all users from the database also searcing anf filetering
 const getUsersFromDb = async (
   params: IUserFilterRequest,
   options: IPaginationOptions
@@ -166,6 +168,8 @@ const getUsersFromDb = async (
     data: result,
   };
 };
+
+
 // reterive single users from the database with id
 const getUserById = async (userId: string) => {
   const result = await prisma.user.findUnique({
@@ -183,7 +187,7 @@ const getUserById = async (userId: string) => {
 // Service function to update user profile
 const updateProfile = async (user: JwtPayload, payload: User) => {
   // Find user by email and ID (you can change this if you prefer a different method of identification)
-  console.log(user);
+
   const userInfo = await prisma.user.findUnique({
     where: {
       email: user.email, // This assumes email is a unique identifier
@@ -282,6 +286,7 @@ const updateProfileImage = async (req: Request) => {
   });
   return updatedUser;
 };
+
 const updateBannerImage = async (req: Request) => {
   const user: JwtPayload | undefined = req.user;
 
@@ -309,28 +314,8 @@ const updateBannerImage = async (req: Request) => {
 return updatedUser
   
 };
-const getAllUsers=async()=>{
-  const users=await prisma.user.findMany();
-  return users;
-}
-// get single user profile 
 
-const getSingleUser = async (userId: string) => {
-  // Fetch user profile from the database
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId, // Use the userId to query the user
-    },
 
-  });
-
-  // If user is not found, throw an error
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
-  }
-
-  return user;
-};
 
 // update user profile by id 
 
@@ -376,8 +361,7 @@ export const userService = {
   getUserProfile,
   updateProfileImage,
   updateBannerImage,
-  getAllUsers,
-  getSingleUser,
+ 
   updateUserById
   
   

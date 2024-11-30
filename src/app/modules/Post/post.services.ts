@@ -9,6 +9,7 @@ import { CloudFormation } from "aws-sdk";
 const addPost = async (req: Request) => {
   try {
     const loginUser = req.user as JwtPayload;
+
     const videoFiles =
       (req.files as { [fieldname: string]: Express.Multer.File[] })["videos"] ||
       [];
@@ -51,7 +52,7 @@ const addPost = async (req: Request) => {
       ...payload,
       photos: savedPhotos,
       videos: savedVideos,
-      userId: loginUser.id, // Associate post with the logged-in user
+      userId: loginUser.id,
     };
 
     const result = await prisma.post.create({ data });
@@ -68,6 +69,11 @@ const getPostById = async (id: string) => {
   try {
     const post = await prisma.post.findUniqueOrThrow({
       where: { id },
+      include:{
+        comments: true,
+        _count: true
+      }
+  
     });
     return post;
   } catch (error: any) {
@@ -81,15 +87,25 @@ const getAllPosts = async (page: number = 1, limit: number = 10) => {
     skip: (page - 1) * limit,
     take: limit,
     orderBy: {
-      createdAt: 'desc', // Ordering by 'createdAt' in descending order
+      createdAt: "desc", // Ordering by 'createdAt' in descending order
     },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          profilePic: true,
+        },
+      },
+      comments: true,
+      _count: true,
+      
     },
   });
   return posts;
 };
-
 
 // Update a post by its ID
 const updatePost = async (req: Request) => {
@@ -142,7 +158,7 @@ const updatePost = async (req: Request) => {
       url: result.Location,
     }));
 
-    console.log(savedPhotos, savedVideos);
+ 
     // Prepare data for the update
     const updateData = {
       ...payload,
@@ -150,7 +166,7 @@ const updatePost = async (req: Request) => {
       videos: [...savedVideos], // Merge new and existing videos
     };
 
-    console.log(updateData, savedPhotos, savedVideos);
+
     // Update the post
     const updatedPost = await prisma.post.update({
       where: { id },
