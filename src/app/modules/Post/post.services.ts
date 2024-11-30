@@ -77,25 +77,19 @@ const getPostById = async (id: string) => {
 
 // Get all posts (optionally paginate)
 const getAllPosts = async (page: number = 1, limit: number = 10) => {
-  try {
-    const posts = await prisma.post.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-   include:{
-    user:true
-   
-   }
-       
-     
-    });
-    return posts;
-  } catch (error: any) {
-    throw new ApiError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Error fetching posts"
-    );
-  }
+  const posts = await prisma.post.findMany({
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: {
+      createdAt: 'desc', // Ordering by 'createdAt' in descending order
+    },
+    include: {
+      user: true,
+    },
+  });
+  return posts;
 };
+
 
 // Update a post by its ID
 const updatePost = async (req: Request) => {
@@ -172,7 +166,6 @@ const updatePost = async (req: Request) => {
 
 // Delete a post by its ID
 const deletePost = async (id: string) => {
-
   const existingPost = await prisma.post.findUnique({
     where: { id },
   });

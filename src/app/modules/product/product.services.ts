@@ -77,6 +77,7 @@ const updateProductByIdInDB = async (
   id: string,
   payload: Partial<TProduct>
 ) => {
+
   const result = await prisma.product.update({
     where: {
       id,

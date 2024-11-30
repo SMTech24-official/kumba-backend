@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import { productServices } from "./product.services";
 import pick from "../../../shared/pick";
 import { fileUploader } from "../../../helpars/fileUploader";
+import ApiError from "../../../errors/ApiErrors";
 
 
 // Controller to create a product
@@ -70,13 +71,34 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to update a product
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const { id } = req.params; // Get product ID from route params
+  const file = req.file;
+  const body = req.body;
 
-  const result = await productServices.updateProductByIdInDB(id, req.body);
+  // Validate product ID existence
+  if (!id) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Product ID is required");
+  }
+
+
+  // Parse body data
+  const parseBodyData = body?.data ? JSON.parse(body.data) : {};
+
+  // If an image file is provided, upload it
+  let uploadImageLink;
+  if (file) {
+    uploadImageLink = await fileUploader.uploadToDigitalOcean(file); // Assuming fileUploader handles image uploads
+    parseBodyData.image = uploadImageLink?.Location; // Update the image field
+  }
+
+  // Update product data in the database
+  const result = await productServices.updateProductByIdInDB(id, parseBodyData);
+
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Product updated successfully",
+    message: "Product updated successfully!",
     data: result,
   });
 });

@@ -331,6 +331,43 @@ const getSingleUser = async (userId: string) => {
 
   return user;
 };
+
+// update user profile by id 
+
+const updateUserById = async (userId: string, userData: User) => {
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: userId, // You update by userId
+    },
+    data: {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      role: userData.role,
+      summary: userData.summary,
+      birthday: userData.birthday,
+      skills: userData.skills,
+      phone: userData.phone,
+      address: userData.address,
+    },
+    select:{
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      role: true,
+      summary: true,
+      birthday: true,
+      skills: true,
+      phone: true,
+      address: true,
+      updatedAt: true,
+    }
+  });
+
+  return updatedUser;
+
+}
 export const userService = {
   createUserIntoDb,
   getUserById,
@@ -340,6 +377,8 @@ export const userService = {
   updateProfileImage,
   updateBannerImage,
   getAllUsers,
-  getSingleUser
+  getSingleUser,
+  updateUserById
+  
   
 };

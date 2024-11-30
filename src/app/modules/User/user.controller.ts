@@ -142,6 +142,23 @@ const userId=req.params.userId
     data: result,
   });
 });
+const updateUserById = catchAsync(async (req: Request, res: Response) => {
+  // Get the authenticated user from req.user
+  
+const data=req.body
+const id =req.params.userId
+  // Call the service function to fetch user profile
+  const result = await userService.updateUserById(id,data);
+
+  // Send the response with user data
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "update user profile!",
+    data: result,
+  });
+});
+
 
 export const userController = {
   createUser,
@@ -152,6 +169,7 @@ export const userController = {
   updateProfileImage,
   updateBannerImage,
   getAllUsers,
-  getSingleUser
+  getSingleUser,
+  updateUserById
 
 };

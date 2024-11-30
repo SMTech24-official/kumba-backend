@@ -57,5 +57,12 @@ router.put(
   auth(UserRole.ADMIN, UserRole.USER),
   userController.updateBannerImage
 );
+router.put(
+  "/update-user-admin/:userId",
+
+  auth(UserRole.ADMIN, UserRole.USER),
+  validateRequest(UserValidation.updateUserByAdminSchema),
+  userController.updateUserById
+);
 
 export const userRoutes = router;

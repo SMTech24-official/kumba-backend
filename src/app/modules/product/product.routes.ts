@@ -20,7 +20,7 @@ router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProductById);
 
 // Route to update a product
-router.put("/:id", productController.updateProduct);
+router.put("/:id",  fileUploader?.uploadSingle, productController.updateProduct);
 
 // Route to delete a product by ID
 router.delete("/:id", productController.deleteProductById);

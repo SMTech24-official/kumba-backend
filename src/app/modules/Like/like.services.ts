@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
+import { JwtPayload } from "jsonwebtoken";
 
 
 const toggleLike = async (id: string, user: any) => {
@@ -72,8 +73,25 @@ const toggleLike = async (id: string, user: any) => {
     return prismaTransaction;
   };
   
+  const getAllMyLikeIds=async(user:JwtPayload)=>{
+    const findUser=await prisma.user.findUnique({where:{id:user.id}})
+ 
+    if(!findUser){
+      throw new ApiError(httpStatus.NOT_FOUND,"User not found");
+    }
+    const result=await prisma.like.findMany({
+      where:{
+        userId:user.id,
+      },
+      select:{
+        postId:true,
+      },
+    });
+    return result.map((item)=>item.postId);
+   }
 
 export const LikeService = {
     toggleLike,
+    getAllMyLikeIds
 
 };

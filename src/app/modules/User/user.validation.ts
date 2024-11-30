@@ -38,8 +38,33 @@ export const userUpdateSchema = z.object({
   address: z.string().optional(),
 });
 
+
+
+
+
+
+
+
+// Define the UserRole enum as a Zod schema
+const UserRoleEnum = z.enum(['ADMIN', 'TEACHER', 'SUPER_ADMIN', 'USER']);
+
+// Create the validation schema for updating a user
+const updateUserByAdminSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+  email: z.string().email('Invalid email address').optional(),
+  role: UserRoleEnum.optional(), // Role can be one of the values from UserRoleEnum
+  summary: z.string().optional(),
+  birthday: z.string().optional(),
+  skills: z.array(z.string()).optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+});
+
+
 export const UserValidation = {
   CreateUserValidationSchema,
   UserLoginValidationSchema,
   userUpdateSchema,
+  updateUserByAdminSchema
 };
