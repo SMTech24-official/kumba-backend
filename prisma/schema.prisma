@@ -103,7 +103,6 @@ model Like {
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   text      String
-  rating    Int
   userId    String   @db.ObjectId
   user      User     @relation("UserComments", fields: [userId], references: [id])
   postId    String   @db.ObjectId

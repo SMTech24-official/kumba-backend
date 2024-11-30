@@ -67,7 +67,6 @@ const updateComment = async (
   const result = await prisma.comment.update({
     where: { id: commentId },
     data: {
-      rating: payload.rating,
       text: payload.text,
     },
   });
