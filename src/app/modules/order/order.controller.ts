@@ -6,9 +6,8 @@ import httpStatus from "http-status";
 
 // Controller to place an order
 const placeOrder = catchAsync(async (req: Request, res: Response) => {
-//   const userId = req.params.userId; // Assuming userId is passed as a parameter
-const userId="6749b2b9ce13dcb3e2d67b36";
-  const result = await orderService.placeOrder(userId);
+  const user = req?.user; 
+  const result = await orderService.placeOrder(user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -42,6 +41,16 @@ const getOrder = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllOrderOfUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await orderService.getAllOrdersFromDB();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All orders retrieved successfully",
+    data: result,
+  });
+});
 
 // Controller to update the status of an order
 const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
@@ -62,4 +71,5 @@ export const orderController = {
   getAllOrders,
   getOrder,
   updateOrderStatus,
+  getAllOrderOfUser
 };

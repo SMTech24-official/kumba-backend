@@ -1,14 +1,13 @@
 import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma"; // Assuming Prisma instance is set up
 
-
 // Place a new order and remove cart items
-const placeOrder = async (userId: string) => {
+const placeOrder = async (user: any) => {
   // Get all cart items for the user
   const cartItems = await prisma.cart.findMany({
-    where: { userId: userId },
+    where: { userId: user?.id },
     include: {
-      product: true, 
+      product: true,
     },
   });
 
@@ -26,7 +25,7 @@ const placeOrder = async (userId: string) => {
   // Create the order in the database
   const order = await prisma.order.create({
     data: {
-      userId: userId,
+      userId: user?.id,
       items: {
         create: orderItems, // Create related order items
       },
@@ -38,10 +37,42 @@ const placeOrder = async (userId: string) => {
 
   // Delete all cart items for the user
   await prisma.cart.deleteMany({
-    where: { userId: userId },
+    where: { userId: user?.id },
   });
 
   return order;
+};
+// Fetch all orders for all users
+const getAllOrdersFromDB = async () => {
+  const orders = await prisma.order.findMany({
+    include: {
+      user: {
+        // If you want to include user details
+        select: {
+          id: true,
+          firstName: true, // Add other user details as needed
+          lastName: true,
+          email: true,
+        },
+      },
+      items: {
+        include: {
+          product: {
+            select: {
+              title: true,
+              price: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!orders || orders.length === 0) {
+    throw new ApiError(404, "No orders found");
+  }
+
+  return orders;
 };
 
 // Fetch all orders for a user
@@ -121,4 +152,5 @@ export const orderService = {
   getOrdersByUser,
   getOrderById,
   updateOrderStatus,
+  getAllOrdersFromDB,
 };

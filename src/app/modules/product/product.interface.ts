@@ -5,4 +5,5 @@ export interface TProduct {
   packageDetails: string;
   price: number;
   quantity: number;
+  isDeleted: boolean;
 }

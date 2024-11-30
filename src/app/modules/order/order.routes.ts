@@ -4,7 +4,8 @@ import { orderController } from "./order.controller";
 const router = express.Router();
 
 // Route to place an order
-router.post("/:userId", orderController.placeOrder);
+router.post("/", orderController.placeOrder);
+router.get("/", orderController.getAllOrderOfUser);
 
 // Route to get all orders by user
 router.get("/:userId", orderController.getAllOrders);

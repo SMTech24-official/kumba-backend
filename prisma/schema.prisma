@@ -139,6 +139,7 @@ model Product {
   quantity       Int
   createdAt      DateTime    @default(now())
   updatedAt      DateTime
+  isDeleted      Boolean     @default(false)
   Review         Review[]
   Cart           Cart[]
   Payment        Payment[]

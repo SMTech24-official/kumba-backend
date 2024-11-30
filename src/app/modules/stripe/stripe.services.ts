@@ -64,6 +64,7 @@ const confirmPaymentIntent = async (
         where: { paymentIntentId: paymentIntent.id },
         data: { status: "succeeded", updatedAt: new Date() },
       });
+      
       return paymentIntent;
     }
 
