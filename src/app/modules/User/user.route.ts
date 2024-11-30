@@ -35,7 +35,7 @@ router.get(
   userController.getUserProfile // Call the controller to get the user profile
 );
 router.get('/get-all', 
-  auth(UserRole.ADMIN), // Ensure user is authenticated
+  auth(), // Ensure user is authenticated
   userController.getAllUsers // Call the controller to get the user profile
 );
 // get single user profile 

@@ -111,7 +111,7 @@ const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
     where: { postId },
     include: {
       user: {
-        select: { id: true, firstName: true, lastName: true },
+        select: { id: true, firstName: true, lastName: true,profilePic:true },
       },
     },
     orderBy: { createdAt: "desc" },

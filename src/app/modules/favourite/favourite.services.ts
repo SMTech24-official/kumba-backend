@@ -2,9 +2,9 @@ import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
 
-
 const toggleFavourite = async (payload: { postId: string }, user: any) => {
   // Check if the post exists
+
   const isPostExist = await prisma.post.findUnique({
     where: {
       id: payload.postId,
@@ -43,13 +43,22 @@ const toggleFavourite = async (payload: { postId: string }, user: any) => {
   }
 };
 
-const getAllFavourites = () => {
-  return prisma.favorite.findMany({
+const getAllFavourites = async () => {
+  const result = await prisma.favorite.findMany({
     include: {
-      user: true,
-      post: true,
+      user: {
+        select: {
+          email: true,
+          firstName: true,
+          lastName: true,
+        },
+      }, // Include the related user data
     },
   });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Not found any favorite");
+  }
+  return result;
 };
 
 const getFavouriteById = (id: string) => {
@@ -87,6 +96,7 @@ const deleteFavourite = async (id: string) => {
 };
 
 const getFavouritesByUser = async (userId: string) => {
+  console.log(userId)
   return await prisma.favorite.findMany({
     where: { userId },
     include: {

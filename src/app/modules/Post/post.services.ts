@@ -142,7 +142,7 @@ const updatePost = async (req: Request) => {
       url: result.Location,
     }));
 
-    console.log(savedPhotos, savedVideos);
+
     // Prepare data for the update
     const updateData = {
       ...payload,
@@ -150,7 +150,7 @@ const updatePost = async (req: Request) => {
       videos: [...savedVideos], // Merge new and existing videos
     };
 
-    console.log(updateData, savedPhotos, savedVideos);
+
     // Update the post
     const updatedPost = await prisma.post.update({
       where: { id },

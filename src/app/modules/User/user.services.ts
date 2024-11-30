@@ -51,6 +51,7 @@ const createUserIntoDb = async (payload: User) => {
       id: true,
       firstName: true,
       lastName: true,
+      designation:true,
       email: true,
       role: true,
       createdAt: true,
@@ -183,7 +184,7 @@ const getUserById = async (userId: string) => {
 // Service function to update user profile
 const updateProfile = async (user: JwtPayload, payload: User) => {
   // Find user by email and ID (you can change this if you prefer a different method of identification)
-  console.log(user);
+
   const userInfo = await prisma.user.findUnique({
     where: {
       email: user.email, // This assumes email is a unique identifier

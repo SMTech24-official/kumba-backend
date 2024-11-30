@@ -35,9 +35,9 @@ const createEducation = async (payload: {
 };
 
 // Get All Education
-const getAllEducation = async (user: JwtPayload) => {
+const getAllEducation = async (id:string) => {
   const educationRecords = await prisma.education.findMany({
-    where: { userId: user.id },
+    where: { userId: id },
   });
   return educationRecords;
 };

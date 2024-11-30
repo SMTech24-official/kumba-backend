@@ -38,7 +38,7 @@ const createPaymentIntent = async (
         updatedAt: new Date(),
       },
     });
-   console.log(payment)
+
     return paymentIntent;
   } catch (error) {
     console.error("Error creating payment intent:", error);

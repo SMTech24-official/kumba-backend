@@ -17,8 +17,7 @@ router.post(
 
 // Get All Education
 router.get(
-  "/",
-  auth(UserRole.ADMIN, UserRole.USER),
+  "/:id",
   educationController.getAllEducationController
 );
 

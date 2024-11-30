@@ -28,8 +28,8 @@ const  user=req.user as JwtPayload
 
 // Get All Awards
 const getAllAwardsController = catchAsync(async(req, res) => {
-const user= req.user as JwtPayload
-    const awards = await awardService.getAllAwards(user);
+const id= req.params.id as string
+    const awards = await awardService.getAllAwards(id);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

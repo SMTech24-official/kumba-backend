@@ -73,6 +73,9 @@ const getCartItemsByUser = async (userId: string) => {
           id: true,
           title: true,
           price: true,
+          Review:true,
+          images: true,
+          description:true
         },
       }, // Include the related product data (if needed)
     },

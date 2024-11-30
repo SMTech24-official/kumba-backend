@@ -28,10 +28,10 @@ const createAward = async (payload: {
   return award;
 };
 
-const getAllAwards = async (user: JwtPayload) => {
+const getAllAwards = async (id: string) => {
    
   const awards = await prisma.award.findMany({
-    where: { userId: user.id },
+    where: { userId: id },
   });
   return awards;
 };
