@@ -37,6 +37,12 @@ const upload = multer({ storage: storage });
 
 // upload single image
 const uploadSingle = upload.single("image");
+const uploadMultipleImage = upload.fields([
+  {
+    name: "images",
+    maxCount: 10,
+  },
+]);
 const updateProfile = upload.fields([
   { name: "profile", maxCount: 1 },
   { name: "banner", maxCount: 1 },
@@ -108,6 +114,7 @@ const uploadToDigitalOcean = async (
 export const fileUploader = {
   upload,
   uploadSingle,
+  uploadMultipleImage,
   updateProfile,
   uploadPost,
   uploadToDigitalOcean,

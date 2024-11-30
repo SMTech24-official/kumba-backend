@@ -9,7 +9,7 @@ const router = express.Router();
 // Route to create a product
 router.post(
   "/create-product",
-  fileUploader?.uploadSingle,
+  fileUploader?.uploadMultipleImage,
   productController.createProduct
 );
 
