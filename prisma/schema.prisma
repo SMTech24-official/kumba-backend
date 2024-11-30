@@ -132,7 +132,7 @@ model Favorite {
 model Product {
   id             String      @id @default(auto()) @map("_id") @db.ObjectId
   title          String
-  image          String
+  images         Json
   description    String
   packageDetails String
   price          Float

@@ -9,7 +9,7 @@ const createProductIntoDB = async (payload: TProduct) => {
   const result = await prisma.product.create({
     data: {
       title: payload.title,
-      image: payload.image,
+      images: payload.images,
       description: payload.description,
       packageDetails: payload.packageDetails,
       price: payload.price,
