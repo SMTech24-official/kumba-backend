@@ -68,9 +68,9 @@ const updateCart = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to delete a cart item
 const deleteCart = catchAsync(async (req: Request, res: Response) => {
-  const { userId, productId } = req.params;
-
-  const result = await cartService.deleteCartItem(userId, productId);
+  const { userId, productId } = req.query;
+console.log(userId, productId);
+  const result = await cartService.deleteCartItem(userId as string, productId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

@@ -8,38 +8,38 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  firstName  String // User's first name
-  lastName   String // User's last name
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  firstName   String // User's first name
+  lastName    String // User's last name
   designation String?
-  email      String      @unique
-  password   String?
-  role       UserRole
-  profilePic String?     @default("") // URL to profile picture
-  bannerPic  String?     @default("") // URL to
-  summary    String?
-  birthday   String?
-  skills     Json?
-  phone      String?
-  address    String?
-  otp        String?
-  OtpExpires DateTime?   @default(now())
-  isVerified Boolean     @default(false)
-  posts      Post[]      @relation("UserPosts")
-  likes      Like[]      @relation("UserLikes")
-  comments   Comment[]   @relation("UserComments")
-  followers  Follower[]  @relation("FollowedUsers")
-  following  Follower[]  @relation("FollowingUsers")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  Award      Award[]
-  Education  Education[]
-  Share      Share[]
-  Favorite   Favorite[]
-  Cart       Cart[]
-  Review     Review[]
-  Payment    Payment[]
-  Order      Order[]
+  email       String      @unique
+  password    String?
+  role        UserRole
+  profilePic  String?     @default("") // URL to profile picture
+  bannerPic   String?     @default("") // URL to
+  summary     String?
+  birthday    String?
+  skills      Json?
+  phone       String?
+  address     String?
+  otp         String?
+  OtpExpires  DateTime?   @default(now())
+  isVerified  Boolean     @default(false)
+  posts       Post[]      @relation("UserPosts")
+  likes       Like[]      @relation("UserLikes")
+  comments    Comment[]   @relation("UserComments")
+  followers   Follower[]  @relation("FollowedUsers")
+  following   Follower[]  @relation("FollowingUsers")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  Award       Award[]
+  Education   Education[]
+  Share       Share[]
+  Favorite    Favorite[]
+  Cart        Cart[]
+  Review      Review[]
+  Payment     Payment[]
+  Order       Order[]
 
   @@map("users")
 }
@@ -239,6 +239,8 @@ model Order {
   status    String      @default("Pending")
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  addressId String?     @db.ObjectId
+  address   Address?    @relation(fields: [addressId], references: [id])
 }
 
 model OrderItem {
@@ -249,6 +251,23 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float
+}
+
+model Address {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName             String
+  lastName              String
+  email                 String   @unique
+  phone                 String
+  street                String
+  city                  String
+  state                 String
+  zipCode               String
+  country               String
+  additionalInformation String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  Order                 Order[]
 }
 
 enum RequestStatus {
