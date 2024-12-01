@@ -109,6 +109,8 @@ const getOrderById = async (orderId: string, userId: string) => {
       userId: userId,
     },
     include: {
+      user: true,
+      
       items: {
         include: {
           product: {

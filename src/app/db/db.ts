@@ -23,9 +23,11 @@ export const initiateSuperAdmin = async () => {
     },
   });
 
-  if (isExistUser) return;
+  if (!isExistUser){
+    await prisma.user.create({
+      data: payload,
+    });
+  };
 
-  await prisma.user.create({
-    data: payload,
-  });
+
 };

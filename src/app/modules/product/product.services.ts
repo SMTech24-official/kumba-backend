@@ -1,3 +1,4 @@
+
 import { Prisma } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 
@@ -53,14 +54,11 @@ const getAllProductsIntoDB = async (
     });
   }
 
+  
   const result = await prisma.product.findMany({
     where: {
       AND: andConditions.length ? andConditions : undefined,
-      isDeleted: false,
       ...filterData,
-    },
-    include: {
-      Review: true,
     },
     skip,
     take: limit,

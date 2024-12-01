@@ -11,8 +11,8 @@ export const deleteUnverifiedUsers = async () => {
                 isVerified: false // Ensure the user is unverified
             }
         });
-        console.log(`${deleteCount.count} expired OTP records were deleted.`);
+       
     } catch (error) {
-        console.error("Error deleting expired OTPs:", error);
+        throw new Error("Failed to delete unverified users");
     }
 };

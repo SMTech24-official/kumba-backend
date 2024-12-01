@@ -67,7 +67,6 @@ const updateComment = async (
   const result = await prisma.comment.update({
     where: { id: commentId },
     data: {
-      rating: payload.rating,
       text: payload.text,
     },
   });
@@ -112,7 +111,7 @@ const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
     where: { postId },
     include: {
       user: {
-        select: { id: true, firstName: true, lastName: true },
+        select: { id: true, firstName: true, lastName: true,profilePic:true },
       },
     },
     orderBy: { createdAt: "desc" },

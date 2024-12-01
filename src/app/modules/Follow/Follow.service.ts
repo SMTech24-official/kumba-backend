@@ -82,7 +82,6 @@ const acceptConnectionRequest = async (userId: string, requestId: string) => {
     where: { id: requestId },
   });
 
-  // console.log(request?.followingId,userId);
   if (
     !request ||
     request.followingId !== userId ||
@@ -91,8 +90,9 @@ const acceptConnectionRequest = async (userId: string, requestId: string) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid connection request.");
   }
 
-  const result = await prisma.follower.delete({
+  const result = await prisma.follower.update({
     where: { id: requestId },
+    data: { status: "ACCEPTED" },
   });
 
   return result;

@@ -368,7 +368,7 @@ const googleOauthLogin = async (user: User) => {
 
   if (!existingUser) {
     // Create a new user if one does not exist
-    console.log("Creating new user");
+  
 
     existingUser = await prisma.user.create({
       data: {

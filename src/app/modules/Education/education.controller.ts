@@ -28,8 +28,8 @@ const createEducation = catchAsync(async (req: Request, res: Response) => {
 
 // Get All Education
 const getAllEducationController = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user as JwtPayload;
-  const educationRecords = await educationService.getAllEducation(user);
+  const id = req.params.id as string;
+  const educationRecords = await educationService.getAllEducation(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

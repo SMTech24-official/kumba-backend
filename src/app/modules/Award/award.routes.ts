@@ -17,7 +17,7 @@ router.post(
 );
 
 // Get All Awards
-router.get("/", auth(UserRole.ADMIN,UserRole.USER), awardController.getAllAwardsController);
+router.get("/:id", awardController.getAllAwardsController);
 
 // Get Award by ID
 router.get("/:awardId", awardController.getAwardById);

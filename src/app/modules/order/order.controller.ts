@@ -7,7 +7,7 @@ import httpStatus from "http-status";
 // Controller to place an order
 const placeOrder = catchAsync(async (req: Request, res: Response) => {
   const user = req?.user; 
-  console.log(user)
+  
   const result = await orderService.placeOrder(user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,

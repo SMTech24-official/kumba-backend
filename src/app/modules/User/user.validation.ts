@@ -59,6 +59,7 @@ const updateUserByAdminSchema = z.object({
   skills: z.array(z.string()).optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
+  designation: z.string().optional(),
 });
 
 

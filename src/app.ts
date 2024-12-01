@@ -38,7 +38,7 @@ app.use("/api/v1", router);
 // cron.schedule("*/1 * * * *", async () => {
 //   try {
 //     await deleteUnverifiedUsers();
-//     console.log("Checked and deleted unverified users successfully.");
+
 //   } catch (error) {
 //     console.error("Error deleting unverified users:", error);
 //   }

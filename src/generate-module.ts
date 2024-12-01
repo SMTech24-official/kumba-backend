@@ -36,7 +36,7 @@ async function createModule(moduleName: string): Promise<void> {
 
   // Check if the module directory already exists
   if (fs.existsSync(moduleDir)) {
-    console.log(`Module "${capitalizedModuleName}" already exists.`);
+ 
     return;
   }
 
@@ -59,13 +59,13 @@ async function createModule(moduleName: string): Promise<void> {
     fs.writeFileSync(filePath, `${comment}\n`); // Write comment as the content of the file
   }
 
-  console.log(`Module "${capitalizedModuleName}" with commented files created successfully.`);
+
 }
 
 // Parse command-line arguments to get the module name
 const args = process.argv.slice(2);
 if (args.length < 1) {
-  console.log('Please provide a module name. Usage: npm run generate <moduleName>');
+ 
   process.exit(1);
 }
 

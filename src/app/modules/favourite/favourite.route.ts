@@ -1,10 +1,12 @@
 import express from "express";
 import { FavouriteController } from "./favourite.controller";
+import auth from "../../middlewares/auth";
+import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
 // Route to toggle a favorite (add/remove)
-router.post("/toggle", FavouriteController.toggleFavourite);
+router.post("/toggle",auth(UserRole.ADMIN,UserRole.USER), FavouriteController.toggleFavourite);
 
 // Route to get all favorites (admin)
 router.get("/", FavouriteController.getAllFavourites);
