@@ -2,45 +2,65 @@ import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma"; // Assuming Prisma instance is set up
 
 // Place a new order and remove cart items
-const placeOrder = async (user: any) => {
-  // Get all cart items for the user
-  const cartItems = await prisma.cart.findMany({
-    where: { userId: user?.id },
-    include: {
-      product: true,
-    },
-  });
-
-  if (!cartItems || cartItems.length === 0) {
-    throw new ApiError(400, "Cart is empty. Cannot place an order.");
-  }
-
-  // Prepare order data
-  const orderItems = cartItems.map((item) => ({
-    productId: item.productId,
-    quantity: item.quantity,
-    price: item.product.price, // Store the current price of the product
-  }));
-
-  // Create the order in the database
-  const order = await prisma.order.create({
-    data: {
-      userId: user?.id,
-      items: {
-        create: orderItems, // Create related order items
+const placeOrder = async (user: any, addressPayload: any) => {
+  return prisma.$transaction(async (tx) => {
+    // Step 1: Get all cart items for the user
+    const cartItems = await tx.cart.findMany({
+      where: { userId: user?.id },
+      include: {
+        product: true,
       },
-      status: "Pending", // Default order status
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
+    });
 
-  // Delete all cart items for the user
-  await prisma.cart.deleteMany({
-    where: { userId: user?.id },
-  });
+    if (!cartItems || cartItems.length === 0) {
+      throw new ApiError(400, "Cart is empty. Cannot place an order.");
+    }
 
-  return order;
+    // Step 2: Prepare order data
+    const orderItems = cartItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.product.price, // Store the current price of the product
+    }));
+
+    // Step 3: Create the order
+    const order = await tx.order.create({
+      data: {
+        userId: user?.id,
+        items: {
+          create: orderItems, // Create related order items
+        },
+        status: "Pending", // Default order status
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    });
+
+    // Step 4: Create the associated address
+    await tx.address.create({
+      data: {
+        firstName: addressPayload.firstName,
+        lastName: addressPayload.lastName,
+        email: addressPayload.email,
+        phone: addressPayload.phone,
+        street: addressPayload.street,
+        city: addressPayload.city,
+        state: addressPayload.state,
+        zipCode: addressPayload.zipCode,
+        country: addressPayload.country,
+        additionalInformation: addressPayload.additionalInformation,
+        orderId: order.id,
+        createdAt: new Date(),
+      },
+    });
+
+    // Step 5: Delete all cart items for the user
+    await tx.cart.deleteMany({
+      where: { userId: user?.id },
+    });
+
+    return order; // Return the created order
+  });
 };
 // Fetch all orders for all users
 const getAllOrdersFromDB = async () => {
@@ -65,12 +85,10 @@ const getAllOrdersFromDB = async () => {
           },
         },
       },
+      Address: true,
     },
   });
 
-  if (!orders || orders.length === 0) {
-    throw new ApiError(404, "No orders found");
-  }
 
   return orders;
 };
@@ -91,6 +109,7 @@ const getOrdersByUser = async (userId: string) => {
           },
         },
       },
+      Address: true,
     },
   });
 
@@ -110,7 +129,7 @@ const getOrderById = async (orderId: string, userId: string) => {
     },
     include: {
       user: true,
-      
+
       items: {
         include: {
           product: {
@@ -121,6 +140,7 @@ const getOrderById = async (orderId: string, userId: string) => {
           },
         },
       },
+      Address: true,
     },
   });
 

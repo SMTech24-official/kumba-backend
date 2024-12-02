@@ -6,9 +6,9 @@ import httpStatus from "http-status";
 
 // Controller to place an order
 const placeOrder = catchAsync(async (req: Request, res: Response) => {
-  const user = req?.user; 
-  
-  const result = await orderService.placeOrder(user);
+  const user = req?.user;
+
+  const result = await orderService.placeOrder(user, req.body);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -19,19 +19,33 @@ const placeOrder = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to get all orders for a user
 const getAllOrders = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.userId;
 
-  const result = await orderService.getOrdersByUser(userId);
+
+  const result = await orderService.getAllOrdersFromDB();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Orders retrieved successfully",
+    message: "All Orders retrieved successfully",
+    data: result,
+  });
+});
+
+
+const getAllOrderOfUser = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as any ;
+  const result = await orderService.getOrdersByUser(user.id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All orders retrieved successfully",
     data: result,
   });
 });
 
 // Controller to get a specific order by orderId
-const getOrder = catchAsync(async (req: Request, res: Response) => {
+const getOrderById = catchAsync(async (req: Request, res: Response) => {
+
   const { orderId, userId } = req.params;
 
   const result = await orderService.getOrderById(orderId, userId);
@@ -42,16 +56,7 @@ const getOrder = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const getAllOrderOfUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await orderService.getAllOrdersFromDB();
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "All orders retrieved successfully",
-    data: result,
-  });
-});
 
 // Controller to update the status of an order
 const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
@@ -70,7 +75,7 @@ const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
 export const orderController = {
   placeOrder,
   getAllOrders,
-  getOrder,
+  getOrderById,
   updateOrderStatus,
-  getAllOrderOfUser
+  getAllOrderOfUser,
 };
