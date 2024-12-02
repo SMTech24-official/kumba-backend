@@ -1,10 +1,11 @@
-
 import { Prisma } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 
 import { TProduct } from "./product.interface";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { IPaginationOptions } from "../../../interfaces/paginations";
+import ApiError from "../../../errors/ApiErrors";
+import httpStatus from "http-status";
 
 const createProductIntoDB = async (payload: TProduct) => {
   const result = await prisma.product.create({
@@ -53,15 +54,16 @@ const getAllProductsIntoDB = async (
       ],
     });
   }
+  // Ensure isDeleted is false
+  andConditions.push({
+    isDeleted: false,
+  });
 
-  
   const result = await prisma.product.findMany({
     where: {
       AND: andConditions.length ? andConditions : undefined,
       ...filterData,
     },
-    skip,
-    take: limit,
   });
 
   return result;
@@ -76,6 +78,8 @@ const getProductByIdFromDB = async (id: string) => {
       Review: true,
     },
   });
+  if (!result) throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
+
   return result;
 };
 
@@ -83,6 +87,10 @@ const updateProductByIdInDB = async (
   id: string,
   payload: Partial<TProduct>
 ) => {
+  const isProductExist = await prisma.product.findUnique({ where: { id } });
+  if (!isProductExist)
+    throw new ApiError(httpStatus.NOT_FOUND, "product not found");
+
   const result = await prisma.product.update({
     where: {
       id,
@@ -96,16 +104,21 @@ const updateProductByIdInDB = async (
 };
 
 const deleteProductFromDB = async (id: string) => {
+  const isProductExist = await prisma.product.findUnique({ where: { id } });
+ 
+  if (isProductExist?.isDeleted === true)
+    throw new ApiError(httpStatus.NOT_FOUND, "product not found ");
+
   const result = await prisma.product.update({
     where: {
       id,
     },
     data: {
-      isDeleted: true, // Mark the product as deleted
-      updatedAt: new Date(), // Update the timestamp
+      isDeleted: true,
+      updatedAt: new Date(),
     },
   });
-  return getAllProductsIntoDB;
+  return result;
 };
 
 export const productServices = {

@@ -81,30 +81,43 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to update a product
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params; // Get product ID from route params
-  const file = req.file;
-  const body = req.body;
+  const { id } = req.params; // Get the product ID from the route parameters
+  const files = req.files as { images: Express.Multer.File[] }; // Type assertion
+  const body = req.body; // Get the body data from the request
 
-  // Validate product ID existence
+  // Validate if the product ID is provided
   if (!id) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Product ID is required");
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ message: "Product ID is required" });
   }
 
-
-  // Parse body data
+  // Parse the body data
   const parseBodyData = body?.data ? JSON.parse(body.data) : {};
 
-  // If an image file is provided, upload it
-  let uploadImageLink;
-  if (file) {
-    uploadImageLink = await fileUploader.uploadToDigitalOcean(file); // Assuming fileUploader handles image uploads
-    parseBodyData.image = uploadImageLink?.Location; // Update the image field
+  let imageLinks: string[] = [];
+  if (files && files.images && files.images.length > 0) {
+    // Process each image in the "images" array and upload to DigitalOcean
+    const uploadPromises = files.images.map((file: Express.Multer.File) =>
+      fileUploader.uploadToDigitalOcean(file)
+    );
+
+    // Wait for all image uploads to finish
+    const uploadedImages = await Promise.all(uploadPromises);
+
+    // Extract the image URLs
+    imageLinks = uploadedImages.map((link) => link.Location);
   }
 
-  // Update product data in the database
-  const result = await productServices.updateProductByIdInDB(id, parseBodyData);
+  const payload = {
+    ...parseBodyData,
+    images: [...(parseBodyData.images || []), ...imageLinks],
+  };
+console.log(payload);
+  // Update the product in the database
+  const result = await productServices.updateProductByIdInDB(id, payload);
 
-
+  // Send the response back to the client
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
