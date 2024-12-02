@@ -96,13 +96,13 @@ const deleteFavourite = async (id: string) => {
 };
 
 const getFavouritesByUser = async (userId: string) => {
-  console.log(userId)
+
   return await prisma.favorite.findMany({
     where: { userId },
     include: {
       post: {
         include: {
-          user: true, // Including the post's author or any other related fields
+          user: true, 
         },
       },
     },

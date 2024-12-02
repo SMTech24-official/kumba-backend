@@ -7,8 +7,9 @@ import httpStatus from "http-status";
 // Controller to create a cart item
 const createCart = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
+  const user = req.user
 
-  const result = await cartService.createCartItem(payload);
+  const result = await cartService.createCartItem(payload,user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -27,10 +28,12 @@ const getAllCart = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-const getCart = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.userId;
 
-  const result = await cartService.getCartItemsByUser(userId);
+// Controller to get the total cart value for a user
+const getCart = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as any;
+
+  const result = await cartService.getCartItemsByUser(user?.id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -69,12 +72,27 @@ const updateCart = catchAsync(async (req: Request, res: Response) => {
 // Controller to delete a cart item
 const deleteCart = catchAsync(async (req: Request, res: Response) => {
   const { userId, productId } = req.query;
-console.log(userId, productId);
   const result = await cartService.deleteCartItem(userId as string, productId as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Cart item deleted successfully",
+    data: result,
+  });
+});
+
+
+
+// Controller to delete a cart item
+const updateCartQuantity = catchAsync(async (req: Request, res: Response) => {
+ const user = req.user as any
+
+
+  const result = await cartService.updateCartQuantity(user.id,req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cart item Updated successfully",
     data: result,
   });
 });
@@ -86,4 +104,5 @@ export const cartController = {
   getCartItem,
   updateCart,
   deleteCart,
+  updateCartQuantity
 };

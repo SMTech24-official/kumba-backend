@@ -21,6 +21,6 @@ router.put("/:id", FavouriteController.updateFavourite);
 router.delete("/:id", FavouriteController.deleteFavourite);
 
 // Route to get all favorites of a user
-router.get("/user/:userId", FavouriteController.getFavouritesByUser);
+router.get("/user/",auth(), FavouriteController.getFavouritesByUser);
 
 export const favouriteRoutes = router;

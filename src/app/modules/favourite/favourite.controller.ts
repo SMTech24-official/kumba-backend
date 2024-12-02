@@ -68,21 +68,22 @@ const updateFavourite = catchAsync(async (req: Request, res: Response) => {
 // Controller to delete a favorite by ID
 const deleteFavourite = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  await FavouriteService.deleteFavourite(id);
+  const user = req.user as any;
+  const result = await FavouriteService.deleteFavourite(id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Favorite deleted successfully.",
-    data: null,
+    message: " Remove from Favorite list  successfully.",
+    data: result,
   });
 });
 
 // Controller to get all favorites by user
 const getFavouritesByUser = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const user = req.user as any;
 
-  const result = await FavouriteService.getFavouritesByUser(userId);
+  const result = await FavouriteService.getFavouritesByUser(user.id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

@@ -3,10 +3,10 @@ import prisma from "../../../shared/prisma";
 
 import { TReview } from "./review.interface";
 
-const createReviewIntoDB = async (payload: TReview) => {
+const createReviewIntoDB = async (payload: TReview,user:any) => {
   await prisma.user.findFirstOrThrow({
     where: {
-      id: payload.userId,
+      id: user.userId,
     },
   });
 
@@ -19,7 +19,7 @@ const createReviewIntoDB = async (payload: TReview) => {
   // Create the review in the database
   const result = await prisma.review.create({
     data: {
-      userId: payload.userId,
+      userId: user.id,
       productId: payload.productId,
       rating: payload.rating,
       comment: payload.comment,
