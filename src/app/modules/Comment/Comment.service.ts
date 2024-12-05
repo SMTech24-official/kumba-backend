@@ -3,10 +3,14 @@ import prisma from "../../../shared/prisma";
 import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiErrors";
 
+
+// creating nested comments
 const addComment = async (user: any, payload: any): Promise<Comment> => {
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, "User not authenticated.");
   }
+
+  // Check if the post exists
   const postExists = await prisma.post.findUnique({
     where: { id: payload.postId },
   });
@@ -18,11 +22,37 @@ const addComment = async (user: any, payload: any): Promise<Comment> => {
     );
   }
 
+  // Validate parentId for nested comments
+  if (payload.parentId) {
+    const parentComment = await prisma.comment.findUnique({
+      where: { id: payload.parentId },
+    });
+
+    if (!parentComment) {
+      throw new ApiError(
+        httpStatus.NOT_FOUND,
+        `Parent comment with ID ${payload.parentId} not found!`
+      );
+    }
+
+    if (parentComment.postId !== payload.postId) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        `Parent comment does not belong to the specified post.`
+      );
+    }
+  }
+
+  // Create and return the comment
   return await prisma.comment.create({
-    data: { userId: user.id, ...payload },
+    data: {
+      userId: user.id,
+      text: payload.text,
+      postId: payload.postId,
+      parentId: payload.parentId || null, // Ensure null for top-level comments
+    },
   });
 };
-
 const getCommentById = async (id: string) => {
   if (!id) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid comment ID.");
@@ -97,7 +127,8 @@ const deleteComment = async (user: any, commentId: string) => {
   return result;
 };
 
-const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
+// getting nested comments by post id
+const getCommentsByPostId = async (postId: string): Promise<any[]> => {
   const postExists = await prisma.post.findUnique({ where: { id: postId } });
 
   if (!postExists) {
@@ -107,15 +138,48 @@ const getCommentsByPostId = async (postId: string): Promise<Comment[]> => {
     );
   }
 
-  return prisma.comment.findMany({
-    where: { postId },
+  const comments = await prisma.comment.findMany({
+    where: { postId, parentId: null }, // Fetch only top-level comments
     include: {
       user: {
-        select: { id: true, firstName: true, lastName: true,profilePic:true },
+        select: { id: true, firstName: true, lastName: true, profilePic: true },
       },
     },
     orderBy: { createdAt: "desc" },
   });
+
+  // Fetch nested replies for each top-level comment
+  const fetchReplies = async (parentId: string): Promise<any[]> => {
+    const replies = await prisma.comment.findMany({
+      where: { parentId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            profilePic: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    // Recursively fetch replies of replies
+    return Promise.all(
+      replies.map(async (reply) => ({
+        ...reply,
+        replies: await fetchReplies(reply.id), // Fetch nested replies
+      }))
+    );
+  };
+
+  return Promise.all(
+    comments.map(async (comment) => ({
+      ...comment,
+      replies: await fetchReplies(comment.id),
+    }))
+  );
 };
 
 export const CommentService = {
@@ -123,5 +187,5 @@ export const CommentService = {
   updateComment,
   deleteComment,
   getCommentsByPostId,
-  getCommentById
+  getCommentById,
 };

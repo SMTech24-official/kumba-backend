@@ -8,30 +8,30 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   firstName   String // User's first name
   lastName    String // User's last name
   designation String?
-  email       String      @unique
+  email       String        @unique
   password    String?
   role        UserRole
-  profilePic  String?     @default("") // URL to profile picture
-  bannerPic   String?     @default("") // URL to
+  profilePic  String?       @default("") // URL to profile picture
+  bannerPic   String?       @default("") // URL to
   summary     String?
   birthday    String?
   skills      Json?
   phone       String?
   address     String?
   otp         String?
-  OtpExpires  DateTime?   @default(now())
-  isVerified  Boolean     @default(false)
-  posts       Post[]      @relation("UserPosts")
-  likes       Like[]      @relation("UserLikes")
-  comments    Comment[]   @relation("UserComments")
-  followers   Follower[]  @relation("FollowedUsers")
-  following   Follower[]  @relation("FollowingUsers")
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  OtpExpires  DateTime?     @default(now())
+  isVerified  Boolean       @default(false)
+  posts       Post[]        @relation("UserPosts")
+  likes       Like[]        @relation("UserLikes")
+  comments    Comment[]     @relation("UserComments")
+  followers   Follower[]    @relation("FollowedUsers")
+  following   Follower[]    @relation("FollowingUsers")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   Award       Award[]
   Education   Education[]
   Share       Share[]
@@ -40,6 +40,7 @@ model User {
   Review      Review[]
   Payment     Payment[]
   Order       Order[]
+  CommentLike CommentLike[]
 
   @@map("users")
 }
@@ -101,17 +102,42 @@ model Like {
   @@map("likes")
 }
 
+// !fasdfasdfasdfasdfasdfa
 model Comment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  text      String
-  userId    String   @db.ObjectId
-  user      User     @relation("UserComments", fields: [userId], references: [id])
-  postId    String   @db.ObjectId
-  post      Post     @relation("PostComments", fields: [postId], references: [id])
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  text   String
+  userId String @db.ObjectId
+  user   User   @relation("UserComments", fields: [userId], references: [id])
+  postId String @db.ObjectId
+  post   Post   @relation("PostComments", fields: [postId], references: [id])
+
+  parentId String?   @db.ObjectId
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies  Comment[] @relation("CommentReplies")
+
+  likes CommentLike[] // New relation for comment likes
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("comments")
 }
+
+model CommentLike {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  commentId String  @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, commentId])
+  @@map("comment_likes")
+}
+
+// !dfadkfjasld;fkpasdflka
 
 model Follower {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
@@ -258,7 +284,7 @@ model Address {
   id                    String   @id @default(auto()) @map("_id") @db.ObjectId
   firstName             String
   lastName              String
-  email                 String   
+  email                 String
   phone                 String
   street                String
   city                  String

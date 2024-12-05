@@ -25,7 +25,6 @@ const auth = (...roles: string[]) => {
         config.jwt.jwt_secret as Secret
       );
       const { id, role, iat } = verifiedUser;
-
       const user = await prisma.user.findUnique({
         where: {
           id: id,

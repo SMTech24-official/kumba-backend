@@ -95,6 +95,7 @@ const getAllOrdersFromDB = async () => {
 
 // Fetch all orders for a user
 const getOrdersByUser = async (userId: string) => {
+
   const orders = await prisma.order.findMany({
     where: { userId: userId },
     include: {

@@ -11,7 +11,7 @@ router.post("/", auth(), orderController.placeOrder);
 // Route to get all orders
 router.get(
   "/",
-  auth(UserRole.ADMIN, UserRole.ADMIN),
+  auth(UserRole.ADMIN,),
   orderController.getAllOrders
 );
 
@@ -24,7 +24,7 @@ router.get("/:orderId", auth(), orderController.getOrderById);
 // Route to update the status of an order
 router.patch(
   "/:orderId/status",
-  auth(UserRole.ADMIN, UserRole.ADMIN),
+  auth(UserRole.ADMIN),
   orderController.updateOrderStatus
 );
 

@@ -38,7 +38,7 @@ const getAllOrderOfUser = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "All orders retrieved successfully",
+    message: "All My orders retrieved successfully",
     data: result,
   });
 });
