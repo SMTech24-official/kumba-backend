@@ -133,7 +133,6 @@ const forgotPassword = async (payload: { email: string }) => {
       email: payload.email,
     },
   });
-
   if (!userData) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -181,7 +180,8 @@ const forgotPassword = async (payload: { email: string }) => {
       OtpExpires: otpExpires,
     },
   });
-  await (userData.email, html, "Forgot Password OTP");
+  await sendEmail(userData.email, html, "Forgot Password OTP");
+
   return { message: "Reset password OTP via your email successfully" };
 };
 

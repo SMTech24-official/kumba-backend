@@ -3,7 +3,6 @@ import config from "../config";
 import nodemailer from "nodemailer";
 
 export const sendEmail = async (to: string, html: string, subject: string) => {
-  console.log(to);
   try {
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -23,6 +22,8 @@ export const sendEmail = async (to: string, html: string, subject: string) => {
       text: "", // plain text body
       html, // html body
     });
-    console.log(result);
-  } catch (error) {}
+    // console.log(result);
+  } catch (error) {
+    console.log(error);
+  }
 };

@@ -56,7 +56,7 @@ router.put(
 );
 router.put(
   "/user/:userId",
-  auth(UserRole.ADMIN, UserRole.USER),
+  auth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   validateRequest(UserValidation.updateUserByAdminSchema),
   userController.updateUserById
 );
