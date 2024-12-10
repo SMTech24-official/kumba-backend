@@ -20,6 +20,6 @@ router.put("/:userId/product/:productId", cartController.updateCart);
 router.put("/update-quantity", auth(), cartController.updateCartQuantity);
 
 // Route to delete a cart item by userId and productId
-router.delete("/delete-cart", cartController.deleteCart);
+router.delete("/:cartId",auth(), cartController.deleteCart);
 
 export const cartRoutes = router;

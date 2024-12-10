@@ -7,9 +7,9 @@ import httpStatus from "http-status";
 // Controller to create a cart item
 const createCart = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
-  const user = req.user
+  const user = req.user;
 
-  const result = await cartService.createCartItem(payload,user);
+  const result = await cartService.createCartItem(payload, user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -58,7 +58,7 @@ const getCartItem = catchAsync(async (req: Request, res: Response) => {
 // Controller to update a cart item
 const updateCart = catchAsync(async (req: Request, res: Response) => {
   const { userId, productId } = req.params;
-  const payload = req.body; // Accepting the full payload to update any part of the cart item
+  const payload = req.body;
 
   const result = await cartService.updateCartItem(userId, productId, payload);
   sendResponse(res, {
@@ -71,8 +71,9 @@ const updateCart = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to delete a cart item
 const deleteCart = catchAsync(async (req: Request, res: Response) => {
-  const { userId, productId } = req.query;
-  const result = await cartService.deleteCartItem(userId as string, productId as string);
+
+  const cartId = req.params.cartId;
+  const result = await cartService.deleteCartItem(cartId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -81,14 +82,11 @@ const deleteCart = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
-
 // Controller to delete a cart item
 const updateCartQuantity = catchAsync(async (req: Request, res: Response) => {
- const user = req.user as any
+  const user = req.user as any;
 
-
-  const result = await cartService.updateCartQuantity(user.id,req.body);
+  const result = await cartService.updateCartQuantity(user.id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -104,5 +102,5 @@ export const cartController = {
   getCartItem,
   updateCart,
   deleteCart,
-  updateCartQuantity
+  updateCartQuantity,
 };

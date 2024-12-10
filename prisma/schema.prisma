@@ -102,7 +102,6 @@ model Like {
   @@map("likes")
 }
 
-// !fasdfasdfasdfasdfasdfa
 model Comment {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   text   String
@@ -136,8 +135,6 @@ model CommentLike {
   @@unique([userId, commentId])
   @@map("comment_likes")
 }
-
-// !dfadkfjasld;fkpasdflka
 
 model Follower {
   id          String        @id @default(auto()) @map("_id") @db.ObjectId
@@ -200,11 +197,11 @@ model Product {
 model Review {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
-  productId String   @db.ObjectId
-  rating    Int
+  productId String  @db.ObjectId
+  rating    Int?
   comment   String
   User      User     @relation(fields: [userId], references: [id])
-  Product   Product  @relation(fields: [productId], references: [id])
+  Product   Product? @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

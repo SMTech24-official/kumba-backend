@@ -190,11 +190,10 @@ const updateCartItem = async (
 };
 
 // Delete a cart item by userId and productId
-const deleteCartItem = async (userId: string, productId: string) => {
+const deleteCartItem = async (cartId: string) => {
   const cartItem = await prisma.cart.findFirst({
     where: {
-      userId: userId,
-      productId: productId,
+      id: cartId,
     },
   });
 

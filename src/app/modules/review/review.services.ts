@@ -3,19 +3,7 @@ import prisma from "../../../shared/prisma";
 
 import { TReview } from "./review.interface";
 
-const createReviewIntoDB = async (payload: TReview,user:any) => {
-  await prisma.user.findFirstOrThrow({
-    where: {
-      id: user.userId,
-    },
-  });
-
-  await prisma.product.findFirstOrThrow({
-    where: {
-      id: payload.id,
-    },
-  });
-
+const createReviewIntoDB = async (payload: TReview, user: any) => {
   // Create the review in the database
   const result = await prisma.review.create({
     data: {
@@ -58,10 +46,10 @@ const getReviewsWithUser = async () => {
 
   return reviews;
 };
-const getSingleProductReviewsWithUser = async (id: any) => {
+const getSingleProductReviewsWithUser = async (productId: any) => {
   const reviews = await prisma.review.findMany({
     where: {
-      productId: id,
+      productId: productId,
     },
     orderBy: {
       createdAt: "desc",
@@ -73,15 +61,9 @@ const getSingleProductReviewsWithUser = async (id: any) => {
           firstName: true,
           lastName: true,
           email: true,
+          profilePic: true,
         },
-      }, // Include the related user data
-      Product: {
-        select: {
-          id: true,
-          title: true,
-          price: true,
-        },
-      }, // Include the related product data (if needed)
+      },
     },
   });
 
@@ -92,6 +74,13 @@ const getSingleProductReviewsWithUser = async (id: any) => {
   return reviews;
 };
 const deleteReviewIntoDB = async (id: any) => {
+  const reviewExists = await prisma.review.findUnique({
+    where: { id },
+  });
+  if (!reviewExists) {
+    throw new ApiError(404, `Review not found`);
+  }
+
   const reviews = await prisma.review.delete({
     where: {
       id: id,
@@ -99,10 +88,9 @@ const deleteReviewIntoDB = async (id: any) => {
   });
 
   if (!reviews) {
-    throw new ApiError(404, `Review not found`);
+    throw new ApiError(404, `Unexpected error occured`);
   }
-const results=await getReviewsWithUser();
-  return results;
+  return reviews;
 };
 
 export const reviewService = {

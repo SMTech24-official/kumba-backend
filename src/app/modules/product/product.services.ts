@@ -75,7 +75,19 @@ const getProductByIdFromDB = async (id: string) => {
       id,
     },
     include: {
-      Review: true,
+      Review: {
+        include: {
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              profilePic: true,
+            },
+          },
+        },
+      },
     },
   });
   if (!result) throw new ApiError(httpStatus.NOT_FOUND, "Product not found");
@@ -105,7 +117,7 @@ const updateProductByIdInDB = async (
 
 const deleteProductFromDB = async (id: string) => {
   const isProductExist = await prisma.product.findUnique({ where: { id } });
- 
+
   if (isProductExist?.isDeleted === true)
     throw new ApiError(httpStatus.NOT_FOUND, "product not found ");
 
