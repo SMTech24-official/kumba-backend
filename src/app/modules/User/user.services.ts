@@ -15,7 +15,6 @@ import { JwtPayload } from "jsonwebtoken";
 import { Request } from "express";
 import { fileUploader } from "../../../helpars/fileUploader";
 
-
 //! Create a new user in the database.
 const createUserIntoDb = async (payload: User) => {
   const existingUser = await prisma.user.findFirst({
@@ -53,7 +52,7 @@ const createUserIntoDb = async (payload: User) => {
       id: true,
       firstName: true,
       lastName: true,
-      designation:true,
+      designation: true,
       email: true,
       role: true,
       createdAt: true,
@@ -61,42 +60,6 @@ const createUserIntoDb = async (payload: User) => {
     },
   });
 
-  if (result) {
-    const html = `
-    <div style="font-family: Arial, sans-serif; color: #333; padding: 30px; background: linear-gradient(135deg, #6c63ff, #3f51b5); border-radius: 8px;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px;">
-            <h2 style="color: #ffffff; font-size: 28px; text-align: center; margin-bottom: 20px;">
-                <span style="color: #ffeb3b;">Email Verification</span>
-            </h2>
-            <p style="font-size: 16px; color: #333; line-height: 1.5; text-align: center;">
-                Thank you for registering with us! Please verify your email address by using the OTP code below:
-            </p>
-            <p style="font-size: 32px; font-weight: bold; color: #ff4081; text-align: center; margin: 20px 0;">
-                ${otp}
-            </p>
-            <div style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 14px; color: #555; margin-bottom: 10px;">
-                    This OTP will expire in <strong>5 minutes</strong>. If you did not request this, please ignore this email.
-                </p>
-                <p style="font-size: 14px; color: #555; margin-bottom: 10px;">
-                    If you need assistance, feel free to contact us.
-                </p>
-            </div>
-            <div style="text-align: center; margin-top: 30px;">
-                <p style="font-size: 12px; color: #999; text-align: center;">
-                    Best Regards,<br/>
-                    <span style="font-weight: bold; color: #3f51b5;">Kuumba Team</span><br/>
-                    <a href="mailto:support@Kuumba.com" style="color: #ffffff; text-decoration: none; font-weight: bold;">Contact Support</a>
-                </p>
-            </div>
-        </div>
-    </div>
-    
-      `;
-
-    // Send the OTP to user's email
-    await sendEmail(result.email, html, "OTP verifications mail");
-  }
   return result;
 };
 
@@ -169,7 +132,6 @@ const getUsersFromDb = async (
     data: result,
   };
 };
-
 
 // reterive single users from the database with id
 const getUserById = async (userId: string) => {
@@ -303,22 +265,19 @@ const updateBannerImage = async (req: Request) => {
   // Upload the image to DigitalOcean (or your cloud storage service)
   const imageUrl = await fileUploader.uploadToDigitalOcean(file);
 
-    // Update the user's profile with the new image URL
-    const updatedUser = await prisma.user.update({
-      where: {
-        id: user.id, // You can use email or other unique identifiers instead of userId if needed.
-      },
-      data: {
-        bannerPic: imageUrl.Location,
-      },
-    });
-return updatedUser
-  
+  // Update the user's profile with the new image URL
+  const updatedUser = await prisma.user.update({
+    where: {
+      id: user.id, // You can use email or other unique identifiers instead of userId if needed.
+    },
+    data: {
+      bannerPic: imageUrl.Location,
+    },
+  });
+  return updatedUser;
 };
 
-
-
-// update user profile by id 
+// update user profile by id
 
 const updateUserById = async (userId: string, userData: User) => {
   const updatedUser = await prisma.user.update({
@@ -336,7 +295,7 @@ const updateUserById = async (userId: string, userData: User) => {
       phone: userData.phone,
       address: userData.address,
     },
-    select:{
+    select: {
       id: true,
       firstName: true,
       lastName: true,
@@ -348,12 +307,11 @@ const updateUserById = async (userId: string, userData: User) => {
       phone: true,
       address: true,
       updatedAt: true,
-    }
+    },
   });
 
   return updatedUser;
-
-}
+};
 export const userService = {
   createUserIntoDb,
   getUserById,
@@ -362,8 +320,6 @@ export const userService = {
   getUserProfile,
   updateProfileImage,
   updateBannerImage,
- 
-  updateUserById
-  
-  
+
+  updateUserById,
 };

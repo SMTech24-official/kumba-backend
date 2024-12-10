@@ -24,10 +24,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
       "User not found! with this email " + payload.email
     );
   }
-  if(!userData.isVerified){
-    throw new ApiError(httpStatus.FORBIDDEN, "User is not verified!");
-  }
-
 
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
@@ -132,15 +128,18 @@ const changePassword = async (
 };
 
 const forgotPassword = async (payload: { email: string }) => {
-  const userData = await prisma.user.findUniqueOrThrow({
+  const userData = await prisma.user.findUnique({
     where: {
       email: payload.email,
     },
   });
 
+  if (!userData) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
   // Step 2: Generate a new OTP and expiration time
   const otp = crypto.randomInt(1000, 9999).toString();
-  const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+  const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #333; padding: 30px; background: linear-gradient(135deg, #6c63ff, #3f51b5); border-radius: 8px;">
@@ -182,7 +181,7 @@ const forgotPassword = async (payload: { email: string }) => {
       OtpExpires: otpExpires,
     },
   });
-  await sendEmail(userData.email, html, "Forgot Password OTP");
+  await (userData.email, html, "Forgot Password OTP");
   return { message: "Reset password OTP via your email successfully" };
 };
 
@@ -243,7 +242,6 @@ const verifyOtp = async (payload: { email: string; otp: string }) => {
     data: {
       otp: "", // Clear the OTP
       OtpExpires: null, // Reset the OTP expiration
-      isVerified: true, // Mark as verified
     },
   });
 
@@ -333,11 +331,6 @@ const refreshToken = async (token: string) => {
     throw new ApiError(httpStatus.NOT_FOUND, "This user is not found!");
   }
 
-  // Check if the user is verified
-  if (!user.isVerified) {
-    throw new ApiError(httpStatus.FORBIDDEN, "This user is not active!");
-  }
-
   // Prepare the payload for the new access token
   const jwtPayload = {
     id: user.id,
@@ -368,12 +361,10 @@ const googleOauthLogin = async (user: User) => {
 
   if (!existingUser) {
     // Create a new user if one does not exist
-  
 
     existingUser = await prisma.user.create({
       data: {
         ...user, // Default role
-        isVerified: true, // Mark as verified for OAuth
       },
     });
   }
@@ -393,7 +384,7 @@ const googleOauthLogin = async (user: User) => {
     config.jwt.jwt_secret as string, // JWT secret from config
     config.jwt.expires_in as string // Token expiration time
   );
-  
+
   const refreshToken = jwtHelpers.generateToken(
     {
       id: existingUser.id,

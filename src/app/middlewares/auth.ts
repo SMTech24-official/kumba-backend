@@ -31,7 +31,10 @@ const auth = (...roles: string[]) => {
         },
       });
       if (!user) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
+        throw new ApiError(
+          httpStatus.NOT_FOUND,
+          "User not found unauthorize access !"
+        );
       }
 
       req.user = verifiedUser as JwtPayload;

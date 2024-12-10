@@ -24,7 +24,6 @@ model User {
   address     String?
   otp         String?
   OtpExpires  DateTime?     @default(now())
-  isVerified  Boolean       @default(false)
   posts       Post[]        @relation("UserPosts")
   likes       Like[]        @relation("UserLikes")
   comments    Comment[]     @relation("UserComments")
